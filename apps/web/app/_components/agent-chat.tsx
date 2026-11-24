@@ -12,7 +12,7 @@ import {
 } from "eve/events";
 import { useEveAgent } from "eve/react";
 import { AlertCircleIcon, BrainIcon, PlusIcon, SquareIcon } from "lucide-react";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   Conversation,
   ConversationContent,
@@ -38,43 +38,14 @@ import { WEB_CHAT_AGENT } from "@/app/eve-agent";
 const DEFAULT_AGENT_NAME = "eve-agent";
 const AGENT_NAME = WEB_CHAT_AGENT ?? DEFAULT_AGENT_NAME;
 
-export function AgentChat({
-  sessionId,
-  sessionless = false,
-}: {
-  readonly sessionId?: string;
-  readonly sessionless?: boolean;
-}) {
+// A session has no URL to come back to: anyone holding a session id may read and continue it,
+// since every visitor is anonymous. A chat lasts as long as its page.
+export function AgentChat({ sessionless = false }: { readonly sessionless?: boolean }) {
   const [cancellationError, setCancellationError] = useState<string>();
   const [hasInputText, setHasInputText] = useState(false);
-  const hasSubmittedMessage = useRef(false);
-  const replaceSessionRoute = (nextSessionId: string) => {
-    if (sessionId !== undefined) return;
-    // Framework routers (Next.js, TanStack Router) patch window.history; navigating
-    // through them would remount this route and detach the active stream.
-    History.prototype.replaceState.call(
-      window.history,
-      window.history.state,
-      "",
-      `/s/${encodeURIComponent(nextSessionId)}`,
-    );
-  };
   const agent = useEveAgent({
     agent: WEB_CHAT_AGENT,
     prewarm: hasInputText,
-    initialSession:
-      sessionId === undefined
-        ? undefined
-        : {
-            sessionId,
-            streamIndex: 0,
-          },
-    resume: sessionId !== undefined,
-    onSessionChange(session) {
-      if (hasSubmittedMessage.current && session !== undefined) {
-        replaceSessionRoute(session.sessionId);
-      }
-    },
   });
 
   const isBusy = agent.status === "busy";
@@ -100,7 +71,7 @@ export function AgentChat({
   const errorMessage = cancellationError ?? agent.error?.message ?? turnFailure;
   const hasConversationContent = sessionless || !isEmpty || errorMessage !== undefined;
   const showConversationLayout = isResuming || hasConversationContent;
-  const activeSessionId = sessionId ?? agent.session?.sessionId;
+  const activeSessionId = agent.session?.sessionId;
   // A session that ended outside eve never settles its requests, so they stay open, yet it
   // accepts no answer. Once the server says so, stop offering them.
   const sessionEnded =
@@ -127,8 +98,6 @@ export function AgentChat({
 
     setHasInputText(false);
     setCancellationError(undefined);
-    hasSubmittedMessage.current = true;
-    if (agent.session !== undefined) replaceSessionRoute(agent.session.sessionId);
     const options = turnOpen ? { turnPolicy: "steer" as const } : undefined;
     captureMessageSent({ withFiles: message.files.length > 0, steer: turnOpen });
 
@@ -178,7 +147,6 @@ export function AgentChat({
       {showConversationLayout ? (
         <Conversation
           className="min-h-0 flex-1"
-          initial={sessionId === undefined ? undefined : false}
           resize={activeSessionId === undefined ? "smooth" : "instant"}
           scrollRestorationKey={
             isEmpty || activeSessionId === undefined
