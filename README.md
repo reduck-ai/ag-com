@@ -1,34 +1,28 @@
 # AG-Com
 
-Agentic commerce: act on any website, as each of your users.
+Agentic commerce: act on any website.
 
-An [eve](https://eve.dev) agent that does things on websites with no API (Luma, LinkedIn, ...) as the person talking to it. [eve connections](https://eve.dev/docs/connections) reach services that have an MCP server or an OpenAPI document. [Reduck](https://reduck.ai) scripts reach the rest.
+An [eve](https://eve.dev) agent that does things on websites with no API (Luma, Amazon, ...). [eve connections](https://eve.dev/docs/connections) reach services that have an MCP server or an OpenAPI document. [Reduck](https://reduck.ai) scripts reach the rest.
 
 ```text
-You:    What Luma events am I going to?
-Agent:  You are not signed in to Luma. Sign in here: https://reduck.ai/connect/...
-You:    Done.
-Agent:  You are going to 3 events: ...
+You:    What tech events are in Paris this week?
+Agent:  On Luma, 5 events: ...
 ```
 
-The user signs in on a cloud browser, on the site's own page. The agent never sees a password or a cookie, and neither does the model.
+The agent uses only the scripts that need no sign-in. They run on a cloud browser.
 
 ## How it works
 
-| File                               | Role                                                                                                                                                                               |
-| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `agent/lib/reduck.ts`              | The Reduck client, and `profileId(ctx)`: each caller gets one Reduck profile, named after the caller's eve id (`principalId`). The model never chooses whose sign-ins a tool uses. |
-| `agent/tools/list_scripts.ts`      | Finds scripts, official ones and your account's.                                                                                                                                   |
-| `agent/tools/read_script.ts`       | A script's contract: its args, what it returns, and whether it needs a sign-in.                                                                                                    |
-| `agent/tools/list_connectors.ts`   | The sites the caller is signed in to.                                                                                                                                              |
-| `agent/tools/request_connector.ts` | A sign-in link for a site. Once the caller signs in, their session on that site is saved in their profile.                                                                         |
-| `agent/tools/run_script.ts`        | Runs a script on a cloud browser, with the caller's sessions.                                                                                                                      |
-| `agent/tools/read_run_results.ts`  | A run's result or error.                                                                                                                                                           |
-| `agent/tools/read_run_trace.ts`    | The steps a run took on the site.                                                                                                                                                  |
-| `agent/instructions.md`            | How the agent uses the tools. Name the scripts of your own product there to keep it to them.                                                                                       |
-| `agent/agent.ts`                   | The model: Claude, with your Anthropic API key.                                                                                                                                    |
-
-In `eve dev` the caller is `local-dev`. In Slack, Teams or any channel that identifies its sender, each person gets a profile of their own. A sign-in link saves the session of whoever signs in on it: in a shared channel, send it in a direct message.
+| File                              | Role                                                                                         |
+| --------------------------------- | -------------------------------------------------------------------------------------------- |
+| `agent/lib/reduck.ts`             | The Reduck client.                                                                           |
+| `agent/tools/list_scripts.ts`     | Finds scripts, official ones and your account's.                                             |
+| `agent/tools/read_script.ts`      | A script's contract: its args and what it returns.                                           |
+| `agent/tools/run_script.ts`       | Runs a script on a cloud browser.                                                            |
+| `agent/tools/read_run_results.ts` | A run's result or error.                                                                     |
+| `agent/tools/read_run_trace.ts`   | The steps a run took on the site.                                                            |
+| `agent/instructions.md`           | How the agent uses the tools. Name the scripts of your own product there to keep it to them. |
+| `agent/agent.ts`                  | The model: Claude, with your Anthropic API key.                                              |
 
 ## Run it
 

@@ -14,13 +14,15 @@ export default defineTool({
 			...opts(),
 			query: { q, host, promoted: "true", page_size: 20 }
 		});
-		return data.data.map((s) => ({
-			handle: s.author.handle,
-			host: s.host,
-			slug: s.slug,
-			name: s.name,
-			description: s.description,
-			logged_in: s.current_version?.logged_in ?? false
-		}));
+		// The agent holds no sign-in, so a script that needs one cannot run.
+		return data.data
+			.filter((s) => !s.current_version?.logged_in)
+			.map((s) => ({
+				handle: s.author.handle,
+				host: s.host,
+				slug: s.slug,
+				name: s.name,
+				description: s.description
+			}));
 	}
 });

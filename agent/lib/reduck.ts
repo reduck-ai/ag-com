@@ -1,5 +1,4 @@
 import * as reduck from "@reduck-ai/sdk";
-import type { SessionContext } from "eve/context";
 
 export { reduck };
 
@@ -26,15 +25,4 @@ export function outcome(run: reduck.Run) {
 		...(done && r && "result" in r ? { result: r.result } : {}),
 		...(done && r && "error" in r ? { error: r.error, error_type: run.error_type } : {})
 	};
-}
-
-// One profile per caller, named after the caller's id: a caller's sign-ins never serve
-// another caller, and the model cannot pick whose account it acts as.
-export async function profileId(ctx: SessionContext): Promise<string> {
-	const name = ctx.session.auth.current?.principalId;
-	if (!name) throw new Error("No caller: this agent acts only for a signed-in caller.");
-	const { data } = await reduck.listConnectorProfiles({ ...opts(), query: { name } });
-	return (
-		data.data[0] ?? (await reduck.createConnectorProfile({ ...opts(), body: { name } })).data
-	).id;
 }
