@@ -28,13 +28,20 @@ The agent uses only the scripts that need no sign-in. They run on a cloud browse
 
 1. Create an API key on [reduck.ai](https://reduck.ai), and one on [Google AI Studio](https://aistudio.google.com/apikey).
 2. Copy `.env.example` to `.env.local`, and put them in it.
-
 3. Start the agent, and chat with it in the terminal:
 
     ```bash
     pnpm install
     pnpm dev
     ```
+
+To chat over HTTP instead, from a script or a test, start it with `pnpm dev --no-ui`, then:
+
+```bash
+curl -X POST http://localhost:2000/eve/v1/session -H 'Content-Type: application/json' \
+  -d '{"message":"Top 3 wireless earbuds, with their prices"}'   # returns a sessionId
+curl -N http://localhost:2000/eve/v1/session/<sessionId>/stream   # the tool calls and the reply
+```
 
 To chat in a browser instead, add eve's Web Chat, then open http://localhost:3000:
 
