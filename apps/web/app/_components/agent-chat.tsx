@@ -35,7 +35,7 @@ import { AgentMessage } from "./agent-message";
 import { captureMessageSent } from "./analytics";
 import { WEB_CHAT_AGENT } from "@/app/eve-agent";
 
-const DEFAULT_AGENT_NAME = "eve-agent";
+const DEFAULT_AGENT_NAME = "AG-Com";
 const AGENT_NAME = WEB_CHAT_AGENT ?? DEFAULT_AGENT_NAME;
 
 // A session has no URL to come back to: anyone holding a session id may read and continue it,

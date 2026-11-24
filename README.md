@@ -9,7 +9,7 @@ You:    What tech events are in Paris this week?
 Agent:  On Luma, 5 events: ...
 ```
 
-The agent uses only the scripts that need no sign-in. They run on a cloud browser.
+The agent uses only the scripts that need no sign-in and change nothing on the website. They run on a cloud browser.
 
 ## How it works
 

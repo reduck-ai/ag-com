@@ -19,8 +19,11 @@ export function Analytics() {
       defaults: "2026-01-30",
       persistence: "localStorage+cookie",
       disable_surveys: true,
-      // The page shows what each visitor types to the agent, so no recording of it.
+      // The page shows what each visitor types to the agent and what the agent answers: no
+      // recording of it, and clicks and copies are captured without the text they hold.
       disable_session_recording: true,
+      mask_all_text: true,
+      capture_copied_text: false,
     });
     posthog.register({ app: "ag-com" });
   }, []);
