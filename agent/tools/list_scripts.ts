@@ -7,12 +7,16 @@ export default defineTool({
 		"Find Reduck scripts: the official ones and those of your account. Each script does one thing on one website. Read a script's contract with read_script before you run it.",
 	inputSchema: z.object({
 		q: z.string().optional().describe("Words that describe the task."),
-		host: z.string().optional().describe("The website, such as luma.com.")
+		host: z.string().optional().describe("The website, such as luma.com."),
+		catalogue_only: z
+			.boolean()
+			.default(true)
+			.describe("Only the official scripts. False adds those of your account.")
 	}),
-	async execute({ q, host }) {
+	async execute({ q, host, catalogue_only }) {
 		const { data } = await reduck.listAllScripts({
 			...opts(),
-			query: { q, host, promoted: "true", page_size: 20 }
+			query: { q, host, catalogue_only: `${catalogue_only}`, promoted: "true", page_size: 20 }
 		});
 		// The agent holds no sign-in, so a script that needs one cannot run.
 		return data.data

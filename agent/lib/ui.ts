@@ -2,26 +2,31 @@ import { defineCatalog } from "@json-render/core";
 import { schema } from "@json-render/react/schema";
 import { z } from "zod";
 
-// What the model may show. How each component looks is fixed in apps/web/app/_components/ui.tsx.
+// The blocks the model composes. How each one looks is fixed in apps/web/app/_components/ui.tsx.
 export const catalog = defineCatalog(schema, {
 	components: {
-		Products: {
-			props: z.object({}),
+		Grid: {
+			props: z.object({ columns: z.number().int().min(1).max(4) }),
 			slots: ["default"],
-			description: "A grid of Product elements."
+			description: "Items side by side."
 		},
-		Product: {
+		Card: {
+			props: z.object({ href: z.string().nullable() }),
+			slots: ["default"],
+			description: "One item. With href, the whole card links to its page."
+		},
+		Row: { props: z.object({}), slots: ["default"], description: "Elements on one line." },
+		Image: { props: z.object({ src: z.string(), alt: z.string() }), description: "A picture." },
+		Text: {
 			props: z.object({
-				title: z.string(),
-				vendor: z.string().describe("The website that sells it, such as Amazon."),
-				url: z.string(),
-				image: z.string().nullable(),
-				price: z.string().describe("With its currency, such as $149.99."),
-				listPrice: z.string().nullable().describe("The price before a discount."),
-				rating: z.number().nullable(),
-				reviews: z.number().nullable()
+				text: z.string(),
+				style: z.enum(["title", "body", "muted", "strong", "struck"])
 			}),
-			description: "A product for sale, linking to its page."
+			description: "title: an item's name. strong: a value that matters, such as a price. struck: a value that no longer applies, such as the price before a discount."
+		},
+		Badge: {
+			props: z.object({ text: z.string(), tone: z.enum(["highlight", "neutral"]) }),
+			description: "A short label, such as a deal."
 		}
 	},
 	actions: {}
