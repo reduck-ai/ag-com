@@ -18,9 +18,10 @@ export default defineTool({
 			...opts(),
 			query: { q, host, catalogue_only: `${catalogue_only}`, promoted: "true", page_size: 20 }
 		});
-		// The agent holds no sign-in, so a script that needs one cannot run.
+		// Only what run_script accepts: no script that needs a sign-in, none that writes.
 		return data.data
-			.filter((s) => !s.current_version?.logged_in)
+			.filter((s) => s.current_version?.logged_in === false)
+			.filter((s) => s.current_version?.side_effects === "none")
 			.map((s) => ({
 				handle: s.author.handle,
 				host: s.host,

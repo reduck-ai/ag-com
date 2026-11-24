@@ -17,7 +17,6 @@
 		"build:web": "next build apps/web"
 	},
 	"dependencies": {
-		"@ai-sdk/google": "4.0.125",
 		"@json-render/core": "0.23.2",
 		"@json-render/react": "0.23.2",
 		"@reduck-ai/sdk": "2.0.0",
@@ -30,12 +29,14 @@
 		"@streamdown/math": "1.0.2",
 		"@streamdown/mermaid": "1.0.2",
 		"@tailwindcss/postcss": "4.3.0",
+		"ai": "7.0.179",
 		"class-variance-authority": "0.7.1",
 		"clsx": "2.1.1",
 		"eve": "1.1.0",
 		"lucide-react": "1.16.0",
 		"nanoid": "5.1.11",
 		"next": "16.4.6",
+		"posthog-js": "1.449.2",
 		"radix-ui": "1.4.3",
 		"react": "19.2.6",
 		"react-dom": "19.2.6",

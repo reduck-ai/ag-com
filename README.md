@@ -9,7 +9,7 @@ You:    What tech events are in Paris this week?
 Agent:  On Luma, 5 events: ...
 ```
 
-The agent uses only the scripts that need no sign-in. They run on a cloud browser.
+The agent uses only the scripts that need no sign-in and change nothing on the website. They run on a cloud browser.
 
 ## How it works
 
@@ -24,11 +24,12 @@ The agent uses only the scripts that need no sign-in. They run on a cloud browse
 | `agent/tools/show.ts`             | Shows products as cards in the browser chat, with [json-render](https://json-render.dev).    |
 | `agent/lib/ui.ts`                 | What `show` can show. How it looks is in `apps/web/app/_components/ui.tsx`.                  |
 | `agent/instructions.md`           | How the agent uses the tools. Name the scripts of your own product there to keep it to them. |
-| `agent/agent.ts`                  | The model: Gemini, with your Google AI Studio API key.                                       |
+| `agent/agent.ts`                  | The model: Gemini, through the [Vercel AI Gateway](https://vercel.com/docs/ai-gateway).      |
+| `agent/channels/eve.ts`           | Who may chat: anyone. See [Deploy](#deploy) for what caps the cost.                          |
 
 ## Run it
 
-1. Create an API key on [reduck.ai](https://reduck.ai), and one on [Google AI Studio](https://aistudio.google.com/apikey).
+1. Create an API key on [reduck.ai](https://reduck.ai), and one on the [Vercel AI Gateway](https://vercel.com/docs/ai-gateway).
 2. Copy `.env.example` to `.env.local`, and put them in it.
 3. Start the agent, and chat with it in the terminal:
 
@@ -51,8 +52,14 @@ To chat in a browser instead, with the products as cards, run `pnpm dev:web`, th
 
 ## Deploy
 
-```bash
-pnpm exec eve deploy
-```
+The Vercel project builds the browser chat and the agent together (`vercel.json`), on each push. Set `REDUCK_API_KEY`, and optionally `NEXT_PUBLIC_POSTHOG_KEY`, in its environment variables. The model needs no key there: the deployment signs in to the AI Gateway with OIDC.
 
-`eve deploy` deploys to Vercel. Set `REDUCK_API_KEY` and `GOOGLE_GENERATIVE_AI_API_KEY` in the environment variables of the Vercel project. See [eve's deployment guide](https://eve.dev/docs/guides/deployment) to host it yourself.
+The chat is open to anyone, so three limits cap what it costs:
+
+- **Reduck**: the plan of the account that owns `REDUCK_API_KEY`. Its monthly quota of cloud browser minutes and runs is the cap.
+- **The model**: a budget on the AI Gateway.
+- **One visitor**: a rate limit per IP in the Vercel firewall: 40 POST on `/eve/v1/*` per 10 minutes, about 20 messages, since starting a chat takes one too.
+
+When one cap is reached, the chat stops for every visitor until the next period.
+
+See [eve's deployment guide](https://eve.dev/docs/guides/deployment) to host it yourself.
