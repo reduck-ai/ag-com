@@ -20,10 +20,9 @@ export function Analytics() {
       persistence: "localStorage+cookie",
       disable_surveys: true,
       // The page shows what each visitor types to the agent and what the agent answers: no
-      // recording of it, and clicks and copies are captured without the text they hold.
+      // recording of it, and clicks are captured without the text they hold.
       disable_session_recording: true,
       mask_all_text: true,
-      capture_copied_text: false,
     });
     posthog.register({ app: "ag-com" });
   }, []);
