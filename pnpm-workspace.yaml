@@ -1,3 +1,5 @@
+allowBuilds:
+  core-js: false
+
 minimumReleaseAgeExclude:
   - '@reduck-ai/sdk@2.0.0'
-  - '@ai-sdk/google@4.0.125'
