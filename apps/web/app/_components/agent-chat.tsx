@@ -32,6 +32,7 @@ import { Button } from "@/components/ui/button";
 import { Trace, TraceIcon, TraceLine, TraceTitle } from "@/components/ui/trace";
 import { cn } from "@/lib/utils";
 import { AgentMessage } from "./agent-message";
+import { captureMessageSent } from "./analytics";
 import { WEB_CHAT_AGENT } from "@/app/eve-agent";
 
 const DEFAULT_AGENT_NAME = "eve-agent";
@@ -129,6 +130,7 @@ export function AgentChat({
     hasSubmittedMessage.current = true;
     if (agent.session !== undefined) replaceSessionRoute(agent.session.sessionId);
     const options = turnOpen ? { turnPolicy: "steer" as const } : undefined;
+    captureMessageSent({ withFiles: message.files.length > 0, steer: turnOpen });
 
     if (message.files.length === 0) {
       await agent.send(text, options);
