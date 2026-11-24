@@ -1,0 +1,5 @@
+.eve/
+.output/
+.env*.local
+apps/web/
+agent/channels/eve.ts
