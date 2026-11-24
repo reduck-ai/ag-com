@@ -1,6 +1,9 @@
+import { google } from "@ai-sdk/google";
 import { defineAgent } from "eve";
-import { anthropic } from "eve/models/anthropic";
 
 export default defineAgent({
-	model: anthropic()
+	model: google("gemini-4-hydrogen"),
+	modelOptions: {
+		providerOptions: { google: { thinkingConfig: { thinkingLevel: "low" } } }
+	}
 });

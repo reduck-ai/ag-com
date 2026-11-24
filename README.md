@@ -22,11 +22,11 @@ The agent uses only the scripts that need no sign-in. They run on a cloud browse
 | `agent/tools/read_run_results.ts` | A run's result or error.                                                                     |
 | `agent/tools/read_run_trace.ts`   | The steps a run took on the site.                                                            |
 | `agent/instructions.md`           | How the agent uses the tools. Name the scripts of your own product there to keep it to them. |
-| `agent/agent.ts`                  | The model: Claude, with your Anthropic API key.                                              |
+| `agent/agent.ts`                  | The model: Gemini, with your Google AI Studio API key.                                       |
 
 ## Run it
 
-1. Create an API key on [reduck.ai](https://reduck.ai), and one on the [Claude Console](https://console.anthropic.com).
+1. Create an API key on [reduck.ai](https://reduck.ai), and one on [Google AI Studio](https://aistudio.google.com/apikey).
 2. Copy `.env.example` to `.env.local`, and put them in it.
 
 3. Start the agent, and chat with it in the terminal:
@@ -54,4 +54,4 @@ Web Chat writes `apps/web/` and `agent/channels/eve.ts`, which git ignores, and 
 pnpm exec eve deploy
 ```
 
-`eve deploy` deploys to Vercel. Set `REDUCK_API_KEY` and `ANTHROPIC_API_KEY` in the environment variables of the Vercel project. See [eve's deployment guide](https://eve.dev/docs/guides/deployment) to host it yourself.
+`eve deploy` deploys to Vercel. Set `REDUCK_API_KEY` and `GOOGLE_GENERATIVE_AI_API_KEY` in the environment variables of the Vercel project. See [eve's deployment guide](https://eve.dev/docs/guides/deployment) to host it yourself.
