@@ -19,17 +19,20 @@ export default defineTool({
 		// Anyone may chat, and may name any script: the prompt and list_scripts are no boundary.
 		// A script that needs a sign-in would act as the API key's owner, and one that writes
 		// would act on a website for an anonymous visitor.
+		// The run is pinned to the version checked here, so a promotion in between changes nothing.
 		const { data: script } = await reduck.getScript({ ...opts(), path: { handle, host, slug } });
 		const v = script.current_version;
-		if (!v) throw new Error(`${handle}/${host}/${slug} has no version to run.`);
-		if (v.logged_in) throw new Error(`${handle}/${host}/${slug} needs a sign-in: this agent cannot run it.`);
-		if (v.side_effects === "write")
+		if (!v || !script.current_version_id)
+			throw new Error(`${handle}/${host}/${slug} has no version to run.`);
+		if (v.logged_in !== false)
+			throw new Error(`${handle}/${host}/${slug} needs a sign-in: this agent cannot run it.`);
+		if (v.side_effects !== "none")
 			throw new Error(`${handle}/${host}/${slug} changes things on the website: this agent cannot run it.`);
 
 		const { data: run } = await reduck.runScript({
 			...opts(),
 			path: { handle, host, slug },
-			body: { ...body, browser: "managed" }
+			body: { ...body, version_id: script.current_version_id, browser: "managed" }
 		});
 		return outcome(run);
 	}

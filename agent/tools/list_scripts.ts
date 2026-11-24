@@ -20,8 +20,8 @@ export default defineTool({
 		});
 		// Only what run_script accepts: no script that needs a sign-in, none that writes.
 		return data.data
-			.filter((s) => s.current_version && !s.current_version.logged_in)
-			.filter((s) => s.current_version?.side_effects !== "write")
+			.filter((s) => s.current_version?.logged_in === false)
+			.filter((s) => s.current_version?.side_effects === "none")
 			.map((s) => ({
 				handle: s.author.handle,
 				host: s.host,
