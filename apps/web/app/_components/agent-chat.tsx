@@ -1,6 +1,6 @@
 "use client";
 
-import { SessionNotActiveError, type MessagePart } from "eve/client";
+import { ClientError, SessionNotActiveError, type MessagePart } from "eve/client";
 import {
   activeTurn,
   activity,
@@ -68,7 +68,14 @@ export function AgentChat({ sessionless = false }: { readonly sessionless?: bool
     failed?.code === "MODEL_CALL_FAILED"
       ? "The model is temporarily unavailable. Please try again."
       : failed?.message;
-  const errorMessage = cancellationError ?? agent.error?.message ?? turnFailure;
+  // 429 is the Vercel firewall's rate limit per IP, which caps what one visitor spends.
+  const rateLimited = ClientError.is(agent.error) && agent.error.status === 429;
+  const errorMessage =
+    cancellationError ??
+    (rateLimited
+      ? "You sent too many messages. Wait a few minutes, then try again."
+      : agent.error?.message) ??
+    turnFailure;
   const hasConversationContent = sessionless || !isEmpty || errorMessage !== undefined;
   const showConversationLayout = isResuming || hasConversationContent;
   const activeSessionId = agent.session?.sessionId;

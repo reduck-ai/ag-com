@@ -58,7 +58,7 @@ The chat is open to anyone, so three limits cap what it costs:
 
 - **Reduck**: the plan of the account that owns `REDUCK_API_KEY`. Its monthly quota of cloud browser minutes and runs is the cap.
 - **The model**: a budget on the AI Gateway.
-- **One visitor**: a rate limit per IP in the Vercel firewall, on `/eve/v1/*`.
+- **One visitor**: a rate limit per IP in the Vercel firewall: 40 POST on `/eve/v1/*` per 10 minutes, about 20 messages, since starting a chat takes one too.
 
 When one cap is reached, the chat stops for every visitor until the next period.
 
