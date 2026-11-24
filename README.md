@@ -27,12 +27,7 @@ The agent uses only the scripts that need no sign-in. They run on a cloud browse
 ## Run it
 
 1. Create an API key on [reduck.ai](https://reduck.ai), and one on the [Claude Console](https://console.anthropic.com).
-2. Put them in `.env.local`:
-
-    ```bash
-    REDUCK_API_KEY=...
-    ANTHROPIC_API_KEY=...
-    ```
+2. Copy `.env.example` to `.env.local`, and put them in it.
 
 3. Start the agent, and chat with it in the terminal:
 
