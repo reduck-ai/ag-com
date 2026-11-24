@@ -21,6 +21,8 @@ The agent uses only the scripts that need no sign-in. They run on a cloud browse
 | `agent/tools/run_script.ts`       | Runs a script on a cloud browser.                                                            |
 | `agent/tools/read_run_results.ts` | A run's result or error.                                                                     |
 | `agent/tools/read_run_trace.ts`   | The steps a run took on the site.                                                            |
+| `agent/tools/show.ts`             | Shows products as cards in the browser chat, with [json-render](https://json-render.dev).    |
+| `agent/lib/ui.ts`                 | What `show` can show. How it looks is in `apps/web/app/_components/ui.tsx`.                  |
 | `agent/instructions.md`           | How the agent uses the tools. Name the scripts of your own product there to keep it to them. |
 | `agent/agent.ts`                  | The model: Gemini, with your Google AI Studio API key.                                       |
 
@@ -43,15 +45,7 @@ curl -X POST http://localhost:2000/eve/v1/session -H 'Content-Type: application/
 curl -N http://localhost:2000/eve/v1/session/<sessionId>/stream   # the tool calls and the reply
 ```
 
-To chat in a browser instead, add eve's Web Chat, then open http://localhost:3000:
-
-```bash
-pnpm exec eve add channel/web --non-interactive --answer 'web-hosting="next"' --answer 'web-authentication="custom"'
-pnpm add next@latest # the version Web Chat pins has a security advisory
-pnpm dev:web
-```
-
-Web Chat writes `apps/web/` and `agent/channels/eve.ts`, which git ignores, and adds its dependencies to `package.json`.
+To chat in a browser instead, with the products as cards, run `pnpm dev:web`, then open http://localhost:3000.
 
 `REDUCK_API_URL` points the agent at another Reduck server. Leave it unset for reduck.ai.
 
