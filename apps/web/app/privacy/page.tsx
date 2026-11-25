@@ -28,30 +28,27 @@ export default function Page() {
       <LegalSection title="What we collect">
         <ul>
           <li>
-            <strong>What you type and what comes back:</strong> your questions, and the results, links and data
-            returned.
+            <strong>What you type and what comes back:</strong> your questions, any files you add to a message, and the results, links and data returned.
           </li>
           <li>
             <strong>Technical data:</strong> for example your IP address, browser and device type, and when you used
             ShopDuck.
           </li>
           <li>
-            <strong>Run records:</strong> how ShopDuck ran on stores for your request, including which scripts were
+            <strong>Run records:</strong> how ShopDuck ran on websites for your request, including which scripts were
             called, what they returned, errors, and what our browsers displayed.
           </li>
           <li>
-            <strong>Usage analytics:</strong> page views and clicks, collected with a cookie and browser storage. They
-            do not include the text you type or the answers you receive.
+            <strong>Usage analytics:</strong> page views and clicks, collected with a cookie and browser storage. They do not include the text you type. A click on a link in an answer may record the address of the page it opens.
           </li>
         </ul>
         <p>
           ShopDuck does not ask for your name, email or payment details and does not need them. If you type them
           anyway, they may be recorded like anything else you type. Please don&apos;t.
         </p>
-        <p>ShopDuck does not log in to stores with your accounts.</p>
+        <p>ShopDuck does not log in to websites with your accounts.</p>
         <p>
-          The list of your past chats is kept in your browser only. Each chat has its own link, and anyone who has that
-          link can read the chat, so do not share it.
+          The list of your past chats is kept in your browser only. Each chat has its own link, and anyone who has that link can read and continue the chat, so do not share it.
         </p>
       </LegalSection>
 
@@ -76,9 +73,7 @@ export default function Page() {
             security obligations.
           </li>
           <li>
-            <strong>Stores.</strong> To search a store, our browsers visit it and send what is needed, such as the
-            search terms you typed. When you open a store&apos;s link afterwards, you visit that store directly and its
-            own policy applies.
+            <strong>Websites we query.</strong> To search a store or another website, our browsers visit it and send what is needed, such as the search terms you typed. When you open a link afterwards, you visit that website directly and its own policy applies.
           </li>
           <li>
             <strong>Others</strong> where the law requires it, to protect our rights and safety, or in a business
@@ -90,8 +85,7 @@ export default function Page() {
 
       <LegalSection title="AI">
         <p>
-          ShopDuck uses AI models from third-party providers to understand your questions and prepare answers. Your
-          questions, the data collected from stores and the results are sent to them for that purpose.
+          ShopDuck uses AI models from third-party providers to understand your questions and prepare answers. Your questions, the files you add, the data collected from websites and the results are sent to them for that purpose.
         </p>
       </LegalSection>
 
@@ -131,7 +125,7 @@ export default function Page() {
 
       <LegalSection title="Contact">
         <p>
-          Email <strong>contact@conception.dev</strong>.
+          Email <a href="mailto:contact@conception.dev">contact@conception.dev</a>.
         </p>
         <CompanyAddress />
       </LegalSection>

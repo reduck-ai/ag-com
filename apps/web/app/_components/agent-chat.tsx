@@ -229,7 +229,7 @@ export function AgentChat({
         <div className="w-full">{composer}</div>
       </div>
       {showConversationLayout ? null : (
-        <footer className="fixed right-0 bottom-4 left-0 text-center text-muted-foreground text-xs">
+        <footer className="shrink-0 pb-4 text-center text-muted-foreground text-xs">
           <a className="underline-offset-2 hover:underline" href="https://reduck.ai">
             Built with Reduck
           </a>

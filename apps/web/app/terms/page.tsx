@@ -15,6 +15,7 @@ export default function Page() {
           do not expect more than that for now.
         </p>
         <p>Never enter a card number, a password or personal details. ShopDuck cannot buy anything for you.</p>
+        <p>By using ShopDuck, you agree to these terms.</p>
       </BetaNotice>
 
       <LegalSection title="Who we are">
@@ -27,7 +28,7 @@ export default function Page() {
 
       <LegalSection title="What ShopDuck does">
         <p>
-          ShopDuck searches online stores and gives you links to offers you can compare. It does not buy anything, does
+          ShopDuck searches online stores and other public websites and gives you links to offers and information you can compare. It does not buy anything, does
           not log in to stores, and does not use your accounts.
         </p>
         <p>There are no affiliate links, we earn no commission, and no store pays to appear in results.</p>
@@ -40,7 +41,7 @@ export default function Page() {
             information.
           </li>
           <li>Do not use ShopDuck to break the law or harm others, or to interfere with a store&apos;s website.</li>
-          <li>Do not script, scrape or resell access to ShopDuck, overload it, or try to get around its limits.</li>
+          <li>Do not automate bulk access to ShopDuck, resell access to it, overload it, or try to get around its limits.</li>
         </ul>
         <p>We may block or limit any use that we think breaks these rules.</p>
       </LegalSection>
@@ -53,12 +54,10 @@ export default function Page() {
         </p>
       </LegalSection>
 
-      <LegalSection title="Third-party stores">
+      <LegalSection title="Third-party websites">
         <p>
-          We are not affiliated with the stores ShopDuck queries and they do not endorse it. Their names and logos
-          belong to their owners. Stores may limit or refuse automated access, and we may stop querying a store at any
-          time, including at its request. When you open a store&apos;s link, that store&apos;s terms and policies apply
-          to you.
+          We are not affiliated with the stores and websites ShopDuck queries and they do not endorse it. Their names and logos
+          belong to their owners. Websites may limit or refuse automated access, and we may stop querying a website at any time, including at its request. When you open a link, that website&apos;s terms and policies apply to you.
         </p>
       </LegalSection>
 
@@ -114,7 +113,7 @@ export default function Page() {
 
       <LegalSection title="Contact">
         <p>
-          Email <strong>contact@conception.dev</strong>.
+          Email <a href="mailto:contact@conception.dev">contact@conception.dev</a>.
         </p>
         <CompanyAddress />
       </LegalSection>

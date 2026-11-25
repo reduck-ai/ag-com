@@ -32,7 +32,7 @@
 
 .legal p,
 .legal ul {
-  color: var(--muted-foreground);
+  color: var(--foreground);
   font-size: 1rem;
   line-height: 1.7;
   margin: 0 0 16px;
@@ -59,7 +59,7 @@
 }
 
 .legal address {
-  color: var(--muted-foreground);
+  color: var(--foreground);
   font-style: normal;
   line-height: 1.7;
   margin-bottom: 16px;

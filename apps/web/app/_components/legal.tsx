@@ -44,7 +44,7 @@ export function BetaNotice({ children }: { readonly children: ReactNode }) {
   return <div className="legal-notice">{children}</div>;
 }
 
-export const LEGAL_VERSION = "November 25, 2026 (v0.1)";
+export const LEGAL_VERSION = "November 25, 2026";
 
 export function CompanyAddress() {
   return (
