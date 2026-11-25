@@ -1,0 +1,109 @@
+/* Mirrors the style block of reduck.ai's terms-of-service page, on this app's theme tokens. */
+.legal {
+  background: var(--background);
+  color: var(--foreground);
+  min-height: 100vh;
+}
+
+.legal-content {
+  counter-reset: section;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  max-width: 860px;
+  padding: 64px 24px;
+  width: 100%;
+}
+
+.legal h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0 0 8px;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.legal h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 48px 0 16px;
+}
+
+.legal p,
+.legal ul {
+  color: var(--foreground);
+  font-size: 1rem;
+  line-height: 1.7;
+  margin: 0 0 16px;
+}
+
+.legal ul {
+  padding-left: 24px;
+  list-style: disc;
+}
+
+.legal li {
+  margin-bottom: 6px;
+}
+
+.legal strong {
+  color: var(--foreground);
+  font-weight: 600;
+}
+
+.legal a {
+  color: var(--foreground);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.legal address {
+  color: var(--foreground);
+  font-style: normal;
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+
+.legal-version {
+  margin-bottom: 48px !important;
+  text-align: center;
+}
+
+.legal-notice {
+  background: var(--secondary);
+  border-left: 4px solid var(--foreground);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  margin-bottom: 24px;
+  padding: 16px 20px;
+}
+
+.legal-notice p {
+  color: var(--foreground);
+  margin: 0;
+}
+
+.legal-notice p + p {
+  margin-top: 8px;
+}
+
+.legal-content > section {
+  counter-increment: section;
+  margin-bottom: 24px;
+}
+
+.legal-content > section > h2::before {
+  content: counter(section) ". ";
+}
+
+.legal-copyright {
+  font-size: 0.875rem !important;
+  margin-top: 48px !important;
+}
+
+.legal-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  font-size: 0.875rem;
+}

@@ -14,7 +14,7 @@ import { useEveAgent } from "eve/react";
 import { AlertCircleIcon, BrainIcon, MenuIcon, PlusIcon, SquareIcon } from "@/components/icons";
 import { Dialog } from "radix-ui";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import {
   Conversation,
   ConversationContent,
@@ -244,9 +244,13 @@ export function AgentChat({
         )}
       </div>
       {showConversationLayout ? null : (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2">
+        <footer className="fixed bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-1 whitespace-nowrap text-muted-foreground text-xs">
           <PoweredByReduck />
-        </div>
+          <span aria-hidden>·</span>
+          <FooterLink href="/terms">Terms</FooterLink>
+          <span aria-hidden>·</span>
+          <FooterLink href="/privacy">Privacy</FooterLink>
+        </footer>
       )}
     </main>
   );
@@ -402,13 +406,28 @@ function ChatsPanel({
 
 function PoweredByReduck() {
   return (
-    <a
-      className="rounded-md px-2 py-1 text-muted-foreground text-xs transition-colors hover:text-foreground"
-      href="https://reduck.ai"
-      rel="noreferrer"
-      target="_blank"
-    >
+    <FooterLink external href="https://reduck.ai">
       Powered by Reduck
+    </FooterLink>
+  );
+}
+
+function FooterLink({
+  children,
+  external = false,
+  href,
+}: {
+  readonly children: ReactNode;
+  readonly external?: boolean;
+  readonly href: string;
+}) {
+  return (
+    <a
+      className="rounded-md px-1 py-1 transition-colors hover:text-foreground"
+      href={href}
+      {...(external ? { rel: "noreferrer", target: "_blank" } : {})}
+    >
+      {children}
     </a>
   );
 }
