@@ -11,7 +11,8 @@ import {
   type Activity,
 } from "eve/events";
 import { useEveAgent } from "eve/react";
-import { AlertCircleIcon, BrainIcon, HistoryIcon, PlusIcon, SquareIcon } from "@/components/icons";
+import { AlertCircleIcon, BrainIcon, CloseIcon, MenuIcon, PlusIcon, SquareIcon } from "@/components/icons";
+import { Dialog } from "radix-ui";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
@@ -30,12 +31,6 @@ import {
   usePromptInputAttachments,
 } from "@/components/ai-elements/prompt-input";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Trace, TraceIcon, TraceLine, TraceTitle } from "@/components/ui/trace";
 import { cn } from "@/lib/utils";
 import { AgentMessage } from "./agent-message";
@@ -171,13 +166,11 @@ export function AgentChat({
   return (
     <main className="flex h-dvh flex-col overflow-hidden text-foreground">
       {showConversationLayout ? null : <div aria-hidden className="dot-ground" />}
-      {showConversationLayout || chats.length > 0 ? (
-        <ChatHeader
-          canStartNewChat={activeSessionId !== undefined}
-          chats={chats}
-          showLogo={showConversationLayout}
-        />
-      ) : null}
+      <ChatHeader
+        activeSessionId={activeSessionId}
+        chats={chats}
+        showLogo={showConversationLayout}
+      />
 
       {showConversationLayout ? (
         <Conversation
@@ -233,6 +226,9 @@ export function AgentChat({
           </h1>
         )}
         <div className="w-full">{composer}</div>
+        {showConversationLayout ? null : (
+          <Examples onPick={(text) => void handleSubmit({ text, files: [] })} />
+        )}
       </div>
       {showConversationLayout ? null : (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2">
@@ -293,11 +289,11 @@ function ErrorMessage({ message }: { readonly message: string }) {
 }
 
 function ChatHeader({
-  canStartNewChat,
+  activeSessionId,
   chats,
   showLogo,
 }: {
-  readonly canStartNewChat: boolean;
+  readonly activeSessionId: string | undefined;
   readonly chats: readonly SavedChat[];
   // The empty page shows the logo large, under the header.
   readonly showLogo: boolean;
@@ -305,30 +301,7 @@ function ChatHeader({
   return (
     <header className="pointer-events-none fixed top-0 right-0 left-0 z-20 h-14">
       <div className="relative mx-auto flex h-full w-full max-w-3xl items-center justify-center bg-background px-24">
-        {chats.length > 0 ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                aria-label="Open a past chat"
-                className="pointer-events-auto fixed top-3 left-6"
-                size="sm"
-                type="button"
-                variant="ghost"
-              >
-                <HistoryIcon className="size-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="max-w-72">
-              {chats.map((chat) => (
-                <DropdownMenuItem asChild key={chat.sessionId}>
-                  <Link href={`/s/${encodeURIComponent(chat.sessionId)}`}>
-                    <span className="truncate">{chat.title}</span>
-                  </Link>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : null}
+        <ChatsPanel activeSessionId={activeSessionId} chats={chats} />
         {showLogo ? (
           <a
             aria-label={AGENT_NAME}
@@ -338,35 +311,149 @@ function ChatHeader({
             <img alt="" className="h-6 w-auto" src="/brand/shopduck-logo.svg" />
           </a>
         ) : null}
-        {canStartNewChat ? (
+      </div>
+    </header>
+  );
+}
+
+/** A panel from the left: a new chat, then the chats this browser started. */
+function ChatsPanel({
+  activeSessionId,
+  chats,
+}: {
+  readonly activeSessionId: string | undefined;
+  readonly chats: readonly SavedChat[];
+}) {
+  return (
+    <Dialog.Root>
+      <Dialog.Trigger asChild>
+        <Button
+          aria-label="Open the menu"
+          className="pointer-events-auto fixed top-3 left-6"
+          size="sm"
+          type="button"
+          variant="ghost"
+        >
+          <MenuIcon className="size-4" />
+        </Button>
+      </Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-40 bg-black/50 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0 motion-reduce:animate-none" />
+        <Dialog.Content
+          aria-describedby={undefined}
+          // The panel takes the focus, not its first button: a ring on New chat at every opening
+          // reads as a selection. Tab still walks into it.
+          onOpenAutoFocus={(event) => {
+            event.preventDefault();
+            (event.currentTarget as HTMLElement).focus();
+          }}
+          className="fixed inset-y-0 left-0 z-50 flex w-72 max-w-[85vw] flex-col gap-4 border-r bg-background p-3 data-[state=closed]:animate-out data-[state=closed]:slide-out-to-left data-[state=open]:animate-in data-[state=open]:slide-in-from-left motion-reduce:animate-none"
+        >
+          <Dialog.Title className="sr-only">Chats</Dialog.Title>
+          <a aria-label={AGENT_NAME} className="w-fit rounded-md px-2 pt-1" href="/">
+            <img alt="" className="h-6 w-auto" src="/brand/shopduck-mark.svg" />
+          </a>
           <Button
-            aria-label="Start a new chat"
-            className="pointer-events-auto fixed top-3 right-6 pr-4"
+            className="w-full justify-start px-2"
             onClick={() => window.location.assign("/s")}
-            size="sm"
             type="button"
             variant="ghost"
           >
-            <PlusIcon className="size-4" />
-            <span className="hidden font-normal text-sm sm:inline">New chat</span>
+            <PlusIcon className="size-3.5" />
+            New chat
           </Button>
-        ) : null}
-      </div>
-    </header>
+          {chats.length > 0 ? (
+            <nav className="flex min-h-0 flex-col gap-2">
+              <h2 className="m-0 px-2 font-medium text-muted-foreground text-xs">Chats</h2>
+              <ul className="m-0 flex list-none flex-col gap-0.5 overflow-y-auto p-0">
+                {chats.map((chat) => (
+                  <li key={chat.sessionId}>
+                    <Link
+                      aria-current={chat.sessionId === activeSessionId ? "page" : undefined}
+                      className="block truncate rounded-lg px-2 py-1.5 text-muted-foreground text-sm transition-colors hover:bg-accent hover:text-foreground aria-[current=page]:bg-accent aria-[current=page]:text-foreground"
+                      href={`/s/${encodeURIComponent(chat.sessionId)}`}
+                    >
+                      {chat.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ) : null}
+          <LocalChatsNotice />
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+}
+
+const NOTICE_DISMISSED = "ag-com:local-chats-notice-dismissed";
+
+/** Says where the list of chats lives, until the visitor closes it. */
+function LocalChatsNotice() {
+  const [dismissed, setDismissed] = useState(true);
+  useEffect(() => {
+    try {
+      setDismissed(localStorage.getItem(NOTICE_DISMISSED) === "1");
+    } catch {
+      setDismissed(false);
+    }
+  }, []);
+  if (dismissed) return null;
+  return (
+    <div className="mt-auto flex items-start gap-2 rounded-lg bg-secondary p-3 text-muted-foreground text-sm">
+      <p className="m-0 flex-1">Your chat history is saved in this browser only.</p>
+      <button
+        aria-label="Close"
+        className="-m-1 rounded-sm p-1 transition-colors hover:text-foreground"
+        onClick={() => {
+          setDismissed(true);
+          try {
+            localStorage.setItem(NOTICE_DISMISSED, "1");
+          } catch {}
+        }}
+        type="button"
+      >
+        <CloseIcon className="size-3" />
+      </button>
+    </div>
   );
 }
 
 function PoweredByReduck() {
   return (
     <a
-      className="flex items-center gap-2 rounded-md px-2 py-1 text-muted-foreground text-xs transition-colors hover:text-foreground"
+      className="rounded-md px-2 py-1 text-muted-foreground text-xs transition-colors hover:text-foreground"
       href="https://reduck.ai"
       rel="noreferrer"
       target="_blank"
     >
-      Powered by
-      <img alt="Reduck" className="h-4 w-auto" src="/brand/reduck-logo.png" />
+      Powered by Reduck
     </a>
+  );
+}
+
+const EXAMPLES = [
+  "Black Friday deals on running shoes",
+  "The best wireless earbuds under $100",
+  "A coffee gift for my dad",
+];
+
+function Examples({ onPick }: { readonly onPick: (text: string) => void }) {
+  return (
+    <ul className="m-0 -mt-3 flex list-none flex-wrap justify-center gap-x-4 gap-y-1 p-0">
+      {EXAMPLES.map((text) => (
+        <li key={text}>
+          <button
+            className="rounded-md px-1 py-0.5 text-muted-foreground text-sm transition-colors hover:text-foreground"
+            onClick={() => onPick(text)}
+            type="button"
+          >
+            {text}
+          </button>
+        </li>
+      ))}
+    </ul>
   );
 }
 

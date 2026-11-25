@@ -11,6 +11,7 @@ import {
   faArrowDown,
   faArrowUp,
   faArrowUpRightFromSquare,
+  faBars,
   faBrain,
   faCheck,
   faChevronDown,
@@ -18,7 +19,6 @@ import {
   faChevronRight,
   faChevronUp,
   faCircleExclamation,
-  faClockRotateLeft,
   faDownload,
   faKey,
   faPlus,
@@ -27,6 +27,7 @@ import {
   faTag,
   faTerminal,
   faWrench,
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { cn } from "@/lib/utils";
@@ -51,13 +52,14 @@ export const ChevronLeftIcon = icon(faChevronLeft);
 export const ChevronRightIcon = icon(faChevronRight);
 export const ChevronUpIcon = icon(faChevronUp);
 export const CircleIcon = icon(faCircle);
+export const CloseIcon = icon(faXmark);
 export const CopyIcon = icon(faCopy);
 export const DownloadIcon = icon(faDownload);
 export const ExternalLinkIcon = icon(faArrowUpRightFromSquare);
 export const FileIcon = icon(faFile);
-export const HistoryIcon = icon(faClockRotateLeft);
 export const ImageIcon = icon(faImage);
 export const KeyRoundIcon = icon(faKey);
+export const MenuIcon = icon(faBars);
 export const PlusIcon = icon(faPlus);
 export const SquareIcon = icon(faStop);
 export const TagIcon = icon(faTag);

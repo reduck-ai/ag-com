@@ -306,6 +306,7 @@ body {
 
 /* A menu takes the focus when it opens: its items show the focus, not the panel. */
 [role="menu"]:focus-visible,
-[role="listbox"]:focus-visible {
+[role="listbox"]:focus-visible,
+[role="dialog"]:focus-visible {
   box-shadow: var(--popover-shadow);
 }
