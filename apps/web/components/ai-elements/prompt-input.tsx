@@ -3,7 +3,7 @@
 import { InputGroup, InputGroupButton, InputGroupTextarea } from "@/components/ui/input-group";
 import { cn } from "@/lib/utils";
 import type { FileUIPart } from "ai";
-import { ArrowUpIcon } from "lucide-react";
+import { ArrowUpIcon } from "@/components/icons";
 import { nanoid } from "nanoid";
 import type {
   ChangeEventHandler,
@@ -245,8 +245,8 @@ export const PromptInput = ({
       <form className="w-full" onSubmit={handleSubmit} ref={formRef} {...props}>
         <InputGroup
           className={cn(
-            "overflow-hidden rounded-2xl bg-card/80 shadow-sm backdrop-blur-md",
-            "focus-within:border-foreground! has-[[data-slot=input-group-control]:focus-visible]:border-foreground!",
+            "overflow-hidden rounded-xl border-input bg-background/70 backdrop-blur-md transition-colors hover:border-muted-foreground/60",
+            "focus-within:border-muted-foreground! has-[[data-slot=input-group-control]:focus-visible]:border-muted-foreground!",
             className,
           )}
         >
@@ -339,7 +339,7 @@ export const PromptInputButton = ({
 }: ComponentProps<typeof InputGroupButton>) => (
   <InputGroupButton
     className={cn(
-      "rounded-full",
+      "rounded-sm",
       variant === "outline" && "bg-card hover:bg-card dark:hover:bg-input/30",
       className,
     )}
@@ -359,7 +359,8 @@ export const PromptInputSubmit = ({
 }: ComponentProps<typeof InputGroupButton>) => (
   <InputGroupButton
     aria-label="Submit"
-    className={cn("absolute right-2.5 bottom-2.5 rounded-full", className)}
+    // 8px in from the composer's 12px corner: a concentric corner of 4px.
+    className={cn("absolute right-2 bottom-2 rounded-sm", className)}
     size={size}
     type="submit"
     variant={variant}

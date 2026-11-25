@@ -11,9 +11,10 @@ import {
   type Activity,
 } from "eve/events";
 import { useEveAgent } from "eve/react";
-import { AlertCircleIcon, BrainIcon, HistoryIcon, PlusIcon, SquareIcon } from "lucide-react";
+import { AlertCircleIcon, BrainIcon, MenuIcon, PlusIcon, SquareIcon } from "@/components/icons";
+import { Dialog } from "radix-ui";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import {
   Conversation,
   ConversationContent,
@@ -30,12 +31,6 @@ import {
   usePromptInputAttachments,
 } from "@/components/ai-elements/prompt-input";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Trace, TraceIcon, TraceLine, TraceTitle } from "@/components/ui/trace";
 import { cn } from "@/lib/utils";
 import { AgentMessage } from "./agent-message";
@@ -117,6 +112,19 @@ export function AgentChat({
     });
   };
 
+  // Escape stops the agent, as the Stop button does, unless it closes something open over the chat.
+  useEffect(() => {
+    if (!turnOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape" || event.defaultPrevented) return;
+      if (document.querySelector('[role="dialog"], [role="menu"]')) return;
+      event.preventDefault();
+      requestCancellation();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  });
+
   const handleSubmit = async (message: PromptInputMessage) => {
     const text = message.text.trim();
     if ((text.length === 0 && message.files.length === 0) || isResuming) return;
@@ -154,9 +162,10 @@ export function AgentChat({
   const composer = (
     <PromptInput onSubmit={handleSubmit}>
       <PromptInputTextarea
+        className={showConversationLayout ? "md:text-base" : "min-h-24 px-3.5 py-3.5 md:text-lg"}
         disabled={isResuming}
         onChange={(event) => setHasInputText(event.currentTarget.value.trim().length > 0)}
-        placeholder="Send a message…"
+        placeholder={isEmpty ? "What are you looking for?" : "Send a message…"}
       />
       <ComposerAction
         hasInputText={hasInputText}
@@ -168,10 +177,13 @@ export function AgentChat({
   );
 
   return (
-    <main className="flex h-dvh flex-col overflow-hidden bg-background text-foreground">
-      {showConversationLayout || chats.length > 0 ? (
-        <ChatHeader canStartNewChat={activeSessionId !== undefined} chats={chats} />
-      ) : null}
+    <main className="flex h-dvh flex-col overflow-hidden text-foreground">
+      {showConversationLayout ? null : <div aria-hidden className="dot-ground" />}
+      <ChatHeader
+        activeSessionId={activeSessionId}
+        chats={chats}
+        showLogo={showConversationLayout}
+      />
 
       {showConversationLayout ? (
         <Conversation
@@ -218,29 +230,26 @@ export function AgentChat({
           "mx-auto w-full px-4 sm:px-6",
           showConversationLayout
             ? "fixed bottom-0 left-1/2 z-20 max-w-3xl -translate-x-1/2 bg-gradient-to-t from-background via-background to-transparent pt-4 pb-6"
-            : "flex max-w-xl flex-1 flex-col items-center justify-center gap-8 pb-[10vh]",
+            : "flex max-w-[39rem] flex-1 flex-col items-center justify-center gap-8 pb-[10vh]",
         )}
       >
         {showConversationLayout ? null : (
-          <div className="flex flex-col items-center gap-3 text-center">
-            <h1 className="font-medium text-5xl tracking-tighter">{AGENT_NAME}</h1>
-          </div>
+          <h1 className="m-0">
+            <img alt={AGENT_NAME} className="h-9 w-auto sm:h-11" src="/brand/shopduck-logo.svg" />
+          </h1>
         )}
         <div className="w-full">{composer}</div>
+        {showConversationLayout ? null : (
+          <Examples onPick={(text) => void handleSubmit({ text, files: [] })} />
+        )}
       </div>
       {showConversationLayout ? null : (
-        <footer className="shrink-0 pb-4 text-center text-muted-foreground text-xs">
-          <a className="underline-offset-2 hover:underline" href="https://reduck.ai">
-            Built with Reduck
-          </a>
-          {" · "}
-          <a className="underline-offset-2 hover:underline" href="/terms">
-            Terms
-          </a>
-          {" · "}
-          <a className="underline-offset-2 hover:underline" href="/privacy">
-            Privacy
-          </a>
+        <footer className="fixed bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-1 whitespace-nowrap text-muted-foreground text-xs">
+          <PoweredByReduck />
+          <span aria-hidden>·</span>
+          <FooterLink href="/terms">Terms</FooterLink>
+          <span aria-hidden>·</span>
+          <FooterLink href="/privacy">Privacy</FooterLink>
         </footer>
       )}
     </main>
@@ -268,7 +277,8 @@ function ComposerAction({
   return (
     <PromptInputButton
       aria-label="Stop"
-      className="absolute right-2.5 bottom-2.5"
+      title="Stop (Esc)"
+      className="absolute right-2 bottom-2"
       onClick={onCancel}
       variant="outline"
     >
@@ -282,7 +292,7 @@ function ErrorMessage({ message }: { readonly message: string }) {
     <Message className="max-w-full" from="assistant">
       <MessageContent>
         <div
-          className="flex w-full items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2.5 text-sm"
+          className="flex w-full items-start gap-3 rounded-lg bg-danger px-3 py-2.5 text-sm"
           role="alert"
         >
           <AlertCircleIcon className="mt-0.5 size-4 shrink-0 text-destructive" />
@@ -297,68 +307,152 @@ function ErrorMessage({ message }: { readonly message: string }) {
 }
 
 function ChatHeader({
-  canStartNewChat,
+  activeSessionId,
   chats,
+  showLogo,
 }: {
-  readonly canStartNewChat: boolean;
+  readonly activeSessionId: string | undefined;
   readonly chats: readonly SavedChat[];
+  // The empty page shows the logo large, under the header.
+  readonly showLogo: boolean;
 }) {
   return (
     <header className="pointer-events-none fixed top-0 right-0 left-0 z-20 h-14">
       <div className="relative mx-auto flex h-full w-full max-w-3xl items-center justify-center bg-background px-24">
-        {chats.length > 0 ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                aria-label="Open a past chat"
-                className="pointer-events-auto fixed top-3 left-6"
-                size="sm"
-                type="button"
-                variant="ghost"
-              >
-                <HistoryIcon className="size-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="max-w-72">
-              {chats.map((chat) => (
-                <DropdownMenuItem asChild key={chat.sessionId}>
-                  <Link href={`/s/${encodeURIComponent(chat.sessionId)}`}>
-                    <span className="truncate">{chat.title}</span>
-                  </Link>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : null}
-        <span className="truncate text-muted-foreground text-sm">{AGENT_NAME}</span>
-        <span className="pointer-events-auto ml-3 hidden shrink-0 text-muted-foreground text-xs sm:inline">
-          <a className="underline-offset-2 hover:underline" href="https://reduck.ai">
-            Built with Reduck
-          </a>
-          {" · "}
-          <a className="underline-offset-2 hover:underline" href="/terms">
-            Terms
-          </a>
-          {" · "}
-          <a className="underline-offset-2 hover:underline" href="/privacy">
-            Privacy
-          </a>
-        </span>
-        {canStartNewChat ? (
-          <Button
-            aria-label="Start a new chat"
-            className="pointer-events-auto fixed top-3 right-6 pr-4"
-            onClick={() => window.location.assign("/s")}
-            size="sm"
-            type="button"
-            variant="ghost"
+        <ChatsPanel activeSessionId={activeSessionId} chats={chats} />
+        {showLogo ? (
+          <a
+            aria-label={AGENT_NAME}
+            className="pointer-events-auto flex items-center rounded-md"
+            href="/"
           >
-            <PlusIcon className="size-4" />
-            <span className="hidden font-normal text-sm sm:inline">New chat</span>
-          </Button>
+            <img alt="" className="h-6 w-auto" src="/brand/shopduck-logo.svg" />
+          </a>
         ) : null}
       </div>
     </header>
+  );
+}
+
+/** A panel from the left: a new chat, then the chats this browser started. */
+function ChatsPanel({
+  activeSessionId,
+  chats,
+}: {
+  readonly activeSessionId: string | undefined;
+  readonly chats: readonly SavedChat[];
+}) {
+  return (
+    <Dialog.Root>
+      <Dialog.Trigger asChild>
+        <Button
+          aria-label="Open the menu"
+          className="pointer-events-auto fixed top-3 left-6"
+          size="sm"
+          type="button"
+          variant="ghost"
+        >
+          <MenuIcon className="size-4" />
+        </Button>
+      </Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-40 bg-black/50 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0 motion-reduce:animate-none" />
+        <Dialog.Content
+          aria-describedby={undefined}
+          // The panel takes the focus, not its first button: a ring on New chat at every opening
+          // reads as a selection. Tab still walks into it.
+          onOpenAutoFocus={(event) => {
+            event.preventDefault();
+            (event.currentTarget as HTMLElement).focus();
+          }}
+          className="fixed inset-y-0 left-0 z-50 flex w-72 max-w-[85vw] flex-col gap-4 border-r bg-background p-3 data-[state=closed]:animate-out data-[state=closed]:slide-out-to-left data-[state=open]:animate-in data-[state=open]:slide-in-from-left motion-reduce:animate-none"
+        >
+          <Dialog.Title className="sr-only">Chats</Dialog.Title>
+          <a aria-label={AGENT_NAME} className="w-fit rounded-md px-2 pt-1" href="/">
+            <img alt="" className="h-6 w-auto" src="/brand/shopduck-mark.svg" />
+          </a>
+          <Button
+            className="w-full justify-start px-2"
+            onClick={() => window.location.assign("/s")}
+            type="button"
+            variant="ghost"
+          >
+            <PlusIcon className="size-3.5" />
+            New chat
+          </Button>
+          {chats.length > 0 ? (
+            <nav className="flex min-h-0 flex-col gap-2">
+              <h2 className="m-0 px-2 font-medium text-[var(--color-grey-300)] text-xs">Chats</h2>
+              <ul className="m-0 flex list-none flex-col gap-0.5 overflow-y-auto p-0">
+                {chats.map((chat) => (
+                  <li key={chat.sessionId}>
+                    <Link
+                      aria-current={chat.sessionId === activeSessionId ? "page" : undefined}
+                      className="block truncate rounded-lg px-2 py-1.5 text-muted-foreground text-sm transition-colors hover:bg-accent hover:text-foreground aria-[current=page]:bg-accent aria-[current=page]:text-foreground"
+                      href={`/s/${encodeURIComponent(chat.sessionId)}`}
+                    >
+                      {chat.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ) : null}
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+}
+
+function PoweredByReduck() {
+  return (
+    <FooterLink external href="https://reduck.ai">
+      Powered by Reduck
+    </FooterLink>
+  );
+}
+
+function FooterLink({
+  children,
+  external = false,
+  href,
+}: {
+  readonly children: ReactNode;
+  readonly external?: boolean;
+  readonly href: string;
+}) {
+  return (
+    <a
+      className="rounded-md px-1 py-1 transition-colors hover:text-foreground"
+      href={href}
+      {...(external ? { rel: "noreferrer", target: "_blank" } : {})}
+    >
+      {children}
+    </a>
+  );
+}
+
+const EXAMPLES = [
+  "Black Friday deals on running shoes",
+  "The best wireless earbuds under $100",
+  "A coffee gift for my dad",
+];
+
+function Examples({ onPick }: { readonly onPick: (text: string) => void }) {
+  return (
+    <ul className="m-0 -mt-3 flex list-none flex-wrap justify-center gap-2 p-0">
+      {EXAMPLES.map((text) => (
+        <li key={text}>
+          <button
+            className="rounded-full border px-3 py-1.5 text-muted-foreground text-sm transition-colors hover:border-[var(--color-grey-500)] hover:text-foreground"
+            onClick={() => onPick(text)}
+            type="button"
+          >
+            {text}
+          </button>
+        </li>
+      ))}
+    </ul>
   );
 }
 
