@@ -11,8 +11,8 @@ import {
   type Activity,
 } from "eve/events";
 import { useEveAgent } from "eve/react";
-import { AlertCircleIcon, BrainIcon, PlusIcon, SquareIcon } from "lucide-react";
-import { useState } from "react";
+import { AlertCircleIcon, BrainIcon, HistoryIcon, PlusIcon, SquareIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 import {
   Conversation,
   ConversationContent,
@@ -29,6 +29,12 @@ import {
   usePromptInputAttachments,
 } from "@/components/ai-elements/prompt-input";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Trace, TraceIcon, TraceLine, TraceTitle } from "@/components/ui/trace";
 import { cn } from "@/lib/utils";
 import { AgentMessage } from "./agent-message";
@@ -39,13 +45,33 @@ const DEFAULT_AGENT_NAME = "AG-Com";
 const AGENT_NAME = WEB_CHAT_AGENT ?? DEFAULT_AGENT_NAME;
 
 // A session has no URL to come back to: anyone holding a session id may read and continue it,
-// since every visitor is anonymous. A chat lasts as long as its page.
+// since every visitor is anonymous. The browser that started a chat lists it; eve keeps its
+// messages.
 export function AgentChat({ sessionless = false }: { readonly sessionless?: boolean }) {
+  const [sessionId, setSessionId] = useState<string>();
+  return (
+    <Chat key={sessionId} onOpen={setSessionId} sessionId={sessionId} sessionless={sessionless} />
+  );
+}
+
+function Chat({
+  sessionless,
+  sessionId,
+  onOpen,
+}: {
+  readonly sessionless: boolean;
+  readonly sessionId: string | undefined;
+  readonly onOpen: (sessionId: string) => void;
+}) {
   const [cancellationError, setCancellationError] = useState<string>();
   const [hasInputText, setHasInputText] = useState(false);
+  const [chats, setChats] = useState<readonly SavedChat[]>([]);
+  useEffect(() => setChats(savedChats()), []);
   const agent = useEveAgent({
     agent: WEB_CHAT_AGENT,
+    initialSession: sessionId === undefined ? undefined : { sessionId, streamIndex: 0 },
     prewarm: hasInputText,
+    resume: sessionId !== undefined,
   });
 
   const isBusy = agent.status === "busy";
@@ -108,11 +134,6 @@ export function AgentChat({ sessionless = false }: { readonly sessionless?: bool
     const options = turnOpen ? { turnPolicy: "steer" as const } : undefined;
     captureMessageSent({ withFiles: message.files.length > 0, steer: turnOpen });
 
-    if (message.files.length === 0) {
-      await agent.send(text, options);
-      return;
-    }
-
     const parts: MessagePart[] = [];
     if (text.length > 0) {
       parts.push({ text, type: "text" });
@@ -126,7 +147,8 @@ export function AgentChat({ sessionless = false }: { readonly sessionless?: bool
       });
     }
 
-    await agent.send(parts, options);
+    const delivery = await agent.send(message.files.length === 0 ? text : parts, options);
+    if (isEmpty) saveChat({ sessionId: delivery.sessionId, title: text || "Files" });
   };
 
   const composer = (
@@ -147,8 +169,8 @@ export function AgentChat({ sessionless = false }: { readonly sessionless?: bool
 
   return (
     <main className="flex h-dvh flex-col overflow-hidden bg-background text-foreground">
-      {showConversationLayout ? (
-        <ChatHeader canStartNewChat={activeSessionId !== undefined} />
+      {showConversationLayout || chats.length > 0 ? (
+        <ChatHeader canStartNewChat={activeSessionId !== undefined} chats={chats} onOpen={onOpen} />
       ) : null}
 
       {showConversationLayout ? (
@@ -259,10 +281,40 @@ function ErrorMessage({ message }: { readonly message: string }) {
   );
 }
 
-function ChatHeader({ canStartNewChat }: { readonly canStartNewChat: boolean }) {
+function ChatHeader({
+  canStartNewChat,
+  chats,
+  onOpen,
+}: {
+  readonly canStartNewChat: boolean;
+  readonly chats: readonly SavedChat[];
+  readonly onOpen: (sessionId: string) => void;
+}) {
   return (
     <header className="pointer-events-none fixed top-0 right-0 left-0 z-20 h-14">
       <div className="relative mx-auto flex h-full w-full max-w-3xl items-center justify-center bg-background px-24">
+        {chats.length > 0 ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                aria-label="Open a past chat"
+                className="pointer-events-auto fixed top-3 left-6"
+                size="sm"
+                type="button"
+                variant="ghost"
+              >
+                <HistoryIcon className="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="max-w-72">
+              {chats.map((chat) => (
+                <DropdownMenuItem key={chat.sessionId} onSelect={() => onOpen(chat.sessionId)}>
+                  <span className="truncate">{chat.title}</span>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : null}
         <span className="truncate text-muted-foreground text-sm">{AGENT_NAME}</span>
         {canStartNewChat ? (
           <Button
@@ -310,6 +362,17 @@ function activityLabel(activity: Activity): string {
     default:
       return "Thinking";
   }
+}
+
+type SavedChat = { readonly sessionId: string; readonly title: string };
+
+// In the browser only: a session id is all it takes to read the chat.
+const CHATS = "ag-com:chats";
+function savedChats(): SavedChat[] {
+  return JSON.parse(localStorage.getItem(CHATS) ?? "[]");
+}
+function saveChat(chat: SavedChat) {
+  localStorage.setItem(CHATS, JSON.stringify([chat, ...savedChats()]));
 }
 
 function toErrorMessage(error: unknown): string {
