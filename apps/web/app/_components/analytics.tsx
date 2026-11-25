@@ -6,7 +6,7 @@ import { useEffect } from "react";
 const KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY;
 
 /**
- * PostHog, in Reduck's project, its events marked `app: ag-com`. ag-com.ai shares no cookie with
+ * PostHog, in Reduck's project, its events marked `app: shopduck`. shopduck.ai shares no cookie with
  * reduck.ai, so a visitor here and the same person there are two people to PostHog. Off when no
  * key is set, as in local dev.
  */
@@ -29,12 +29,12 @@ export function Analytics() {
         timestamp,
       }),
     });
-    posthog.register({ app: "ag-com" });
+    posthog.register({ app: "shopduck" });
   }, []);
   return null;
 }
 
 /** An event without the message itself: what a visitor types stays out of PostHog. */
 export function captureMessageSent(props: { readonly withFiles: boolean; readonly steer: boolean }) {
-  if (posthog.__loaded) posthog.capture("ag_com_message_sent", props);
+  if (posthog.__loaded) posthog.capture("shopduck_message_sent", props);
 }

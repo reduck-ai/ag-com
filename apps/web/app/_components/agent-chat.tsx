@@ -489,7 +489,7 @@ function activityLabel(activity: Activity): string {
 type SavedChat = { readonly sessionId: string; readonly title: string };
 
 // In the browser only: a session id is all it takes to read the chat.
-const CHATS = "ag-com:chats";
+const CHATS = "shopduck:chats";
 function savedChats(): SavedChat[] {
   return JSON.parse(localStorage.getItem(CHATS) ?? "[]");
 }

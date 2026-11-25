@@ -20,7 +20,7 @@ export const catalogueOnly = () => process.env.REDUCK_CATALOGUE_ONLY !== "false"
 
 // Every chat runs as the API key's account, which may read any of its runs: a chat reads only the
 // runs it started.
-export const runIds = defineState<string[]>("ag-com.run_ids", () => []);
+export const runIds = defineState<string[]>("shopduck.run_ids", () => []);
 export function runPath(run_id: string) {
 	if (!runIds.get().includes(run_id)) throw new Error(`Run ${run_id} was not started in this chat.`);
 	return { run_id };

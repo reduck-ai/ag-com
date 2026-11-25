@@ -1,5 +1,5 @@
 {
-	"name": "ag-com",
+	"name": "shopduck",
 	"private": true,
 	"type": "module",
 	"description": "An eve agent that acts on websites with no API, with @reduck-ai/sdk.",
