@@ -42,7 +42,7 @@ import { AgentMessage } from "./agent-message";
 import { captureMessageSent } from "./analytics";
 import { WEB_CHAT_AGENT } from "@/app/eve-agent";
 
-const DEFAULT_AGENT_NAME = "AG-Com";
+const DEFAULT_AGENT_NAME = "ShopDuck";
 const AGENT_NAME = WEB_CHAT_AGENT ?? DEFAULT_AGENT_NAME;
 
 // A chat's URL holds its session id, and anyone holding a session id may read and continue it,
@@ -228,6 +228,21 @@ export function AgentChat({
         )}
         <div className="w-full">{composer}</div>
       </div>
+      {showConversationLayout ? null : (
+        <footer className="fixed right-0 bottom-4 left-0 text-center text-muted-foreground text-xs">
+          <a className="underline-offset-2 hover:underline" href="https://reduck.ai">
+            Built with Reduck
+          </a>
+          {" · "}
+          <a className="underline-offset-2 hover:underline" href="/terms">
+            Terms
+          </a>
+          {" · "}
+          <a className="underline-offset-2 hover:underline" href="/privacy">
+            Privacy
+          </a>
+        </footer>
+      )}
     </main>
   );
 }
@@ -316,6 +331,19 @@ function ChatHeader({
           </DropdownMenu>
         ) : null}
         <span className="truncate text-muted-foreground text-sm">{AGENT_NAME}</span>
+        <span className="pointer-events-auto ml-3 hidden shrink-0 text-muted-foreground text-xs sm:inline">
+          <a className="underline-offset-2 hover:underline" href="https://reduck.ai">
+            Built with Reduck
+          </a>
+          {" · "}
+          <a className="underline-offset-2 hover:underline" href="/terms">
+            Terms
+          </a>
+          {" · "}
+          <a className="underline-offset-2 hover:underline" href="/privacy">
+            Privacy
+          </a>
+        </span>
         {canStartNewChat ? (
           <Button
             aria-label="Start a new chat"

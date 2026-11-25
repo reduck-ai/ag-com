@@ -21,7 +21,7 @@ const mono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AG-Com",
+  title: "ShopDuck",
   description: "An agent that acts on websites with no API, with Reduck scripts.",
 };
 
