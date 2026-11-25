@@ -335,7 +335,7 @@ function ChatHeader({
             className="pointer-events-auto flex items-center rounded-md"
             href="/"
           >
-            <img alt="" className="h-5 w-auto" src="/brand/shopduck-logo.svg" />
+            <img alt="" className="h-6 w-auto" src="/brand/shopduck-logo.svg" />
           </a>
         ) : null}
         {canStartNewChat ? (
