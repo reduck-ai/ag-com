@@ -9,7 +9,7 @@ import { code } from "@streamdown/code";
 import { math } from "@streamdown/math";
 import { mermaid } from "@streamdown/mermaid";
 import type { UIMessage } from "ai";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon } from "@/components/icons";
 import type { ComponentProps, HTMLAttributes, ReactElement } from "react";
 import { createContext, memo, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Streamdown } from "streamdown";
@@ -35,9 +35,9 @@ export const MessageContent = ({ children, className, ...props }: MessageContent
   <div
     className={cn(
       "is-user:dark flex w-fit min-w-0 max-w-full flex-col gap-2 overflow-hidden text-sm",
-      "group-[.is-user]:ml-auto group-[.is-user]:rounded-2xl group-[.is-user]:bg-primary group-[.is-user]:px-4 group-[.is-user]:py-2.5 group-[.is-user]:text-primary-foreground",
-      // Streamdown links default to text-primary, which matches the user bubble background.
-      "group-[.is-user]:[&_[data-streamdown=link]]:text-current",
+      "group-[.is-user]:ml-auto group-[.is-user]:rounded-xl group-[.is-user]:border group-[.is-user]:border-input group-[.is-user]:px-4 group-[.is-user]:py-2.5 group-[.is-user]:text-foreground",
+      // Streamdown links default to text-primary, the orange kept for the one action of the page.
+      "[&_[data-streamdown=link]]:text-current [&_[data-streamdown=link]]:underline [&_[data-streamdown=link]]:decoration-muted-foreground",
       "group-[.is-assistant]:w-full group-[.is-assistant]:text-foreground",
       "group-data-[optimistic=true]:opacity-70",
       className,
@@ -231,7 +231,7 @@ export const MessageBranchPrevious = ({ children, ...props }: MessageBranchPrevi
       variant="ghost"
       {...props}
     >
-      {children ?? <ChevronLeftIcon size={14} />}
+      {children ?? <ChevronLeftIcon className="size-3.5" />}
     </Button>
   );
 };
@@ -251,7 +251,7 @@ export const MessageBranchNext = ({ children, ...props }: MessageBranchNextProps
       variant="ghost"
       {...props}
     >
-      {children ?? <ChevronRightIcon size={14} />}
+      {children ?? <ChevronRightIcon className="size-3.5" />}
     </Button>
   );
 };

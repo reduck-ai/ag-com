@@ -11,7 +11,7 @@ import {
   type Activity,
 } from "eve/events";
 import { useEveAgent } from "eve/react";
-import { AlertCircleIcon, BrainIcon, HistoryIcon, PlusIcon, SquareIcon } from "lucide-react";
+import { AlertCircleIcon, BrainIcon, HistoryIcon, PlusIcon, SquareIcon } from "@/components/icons";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
@@ -42,7 +42,7 @@ import { AgentMessage } from "./agent-message";
 import { captureMessageSent } from "./analytics";
 import { WEB_CHAT_AGENT } from "@/app/eve-agent";
 
-const DEFAULT_AGENT_NAME = "AG-Com";
+const DEFAULT_AGENT_NAME = "ShopDuck";
 const AGENT_NAME = WEB_CHAT_AGENT ?? DEFAULT_AGENT_NAME;
 
 // A chat's URL holds its session id, and anyone holding a session id may read and continue it,
@@ -154,9 +154,10 @@ export function AgentChat({
   const composer = (
     <PromptInput onSubmit={handleSubmit}>
       <PromptInputTextarea
+        className={showConversationLayout ? undefined : "min-h-24 px-3.5 py-3.5 md:text-base"}
         disabled={isResuming}
         onChange={(event) => setHasInputText(event.currentTarget.value.trim().length > 0)}
-        placeholder="Send a message…"
+        placeholder={isEmpty ? "What are you looking for?" : "Send a message…"}
       />
       <ComposerAction
         hasInputText={hasInputText}
@@ -168,9 +169,14 @@ export function AgentChat({
   );
 
   return (
-    <main className="flex h-dvh flex-col overflow-hidden bg-background text-foreground">
+    <main className="flex h-dvh flex-col overflow-hidden text-foreground">
+      {showConversationLayout ? null : <div aria-hidden className="dot-ground" />}
       {showConversationLayout || chats.length > 0 ? (
-        <ChatHeader canStartNewChat={activeSessionId !== undefined} chats={chats} />
+        <ChatHeader
+          canStartNewChat={activeSessionId !== undefined}
+          chats={chats}
+          showLogo={showConversationLayout}
+        />
       ) : null}
 
       {showConversationLayout ? (
@@ -217,17 +223,23 @@ export function AgentChat({
         className={cn(
           "mx-auto w-full px-4 sm:px-6",
           showConversationLayout
-            ? "fixed bottom-0 left-1/2 z-20 max-w-3xl -translate-x-1/2 bg-gradient-to-t from-background via-background to-transparent pt-4 pb-6"
-            : "flex max-w-xl flex-1 flex-col items-center justify-center gap-8 pb-[10vh]",
+            ? "fixed bottom-0 left-1/2 z-20 flex max-w-3xl -translate-x-1/2 flex-col items-center gap-2 bg-gradient-to-t from-background via-background to-transparent pt-4 pb-3"
+            : "flex max-w-[39rem] flex-1 flex-col items-center justify-center gap-8 pb-[10vh]",
         )}
       >
         {showConversationLayout ? null : (
-          <div className="flex flex-col items-center gap-3 text-center">
-            <h1 className="font-medium text-5xl tracking-tighter">{AGENT_NAME}</h1>
-          </div>
+          <h1 className="m-0">
+            <img alt={AGENT_NAME} className="h-9 w-auto sm:h-11" src="/brand/shopduck-logo.svg" />
+          </h1>
         )}
         <div className="w-full">{composer}</div>
+        {showConversationLayout ? <PoweredByReduck /> : null}
       </div>
+      {showConversationLayout ? null : (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2">
+          <PoweredByReduck />
+        </div>
+      )}
     </main>
   );
 }
@@ -253,7 +265,7 @@ function ComposerAction({
   return (
     <PromptInputButton
       aria-label="Stop"
-      className="absolute right-2.5 bottom-2.5"
+      className="absolute right-2 bottom-2"
       onClick={onCancel}
       variant="outline"
     >
@@ -267,7 +279,7 @@ function ErrorMessage({ message }: { readonly message: string }) {
     <Message className="max-w-full" from="assistant">
       <MessageContent>
         <div
-          className="flex w-full items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2.5 text-sm"
+          className="flex w-full items-start gap-3 rounded-lg bg-danger px-3 py-2.5 text-sm"
           role="alert"
         >
           <AlertCircleIcon className="mt-0.5 size-4 shrink-0 text-destructive" />
@@ -284,9 +296,12 @@ function ErrorMessage({ message }: { readonly message: string }) {
 function ChatHeader({
   canStartNewChat,
   chats,
+  showLogo,
 }: {
   readonly canStartNewChat: boolean;
   readonly chats: readonly SavedChat[];
+  // The empty page shows the logo large, under the header.
+  readonly showLogo: boolean;
 }) {
   return (
     <header className="pointer-events-none fixed top-0 right-0 left-0 z-20 h-14">
@@ -315,7 +330,15 @@ function ChatHeader({
             </DropdownMenuContent>
           </DropdownMenu>
         ) : null}
-        <span className="truncate text-muted-foreground text-sm">{AGENT_NAME}</span>
+        {showLogo ? (
+          <a
+            aria-label={AGENT_NAME}
+            className="pointer-events-auto flex items-center rounded-md"
+            href="/"
+          >
+            <img alt="" className="h-5 w-auto" src="/brand/shopduck-logo.svg" />
+          </a>
+        ) : null}
         {canStartNewChat ? (
           <Button
             aria-label="Start a new chat"
@@ -331,6 +354,20 @@ function ChatHeader({
         ) : null}
       </div>
     </header>
+  );
+}
+
+function PoweredByReduck() {
+  return (
+    <a
+      className="flex items-center gap-2 rounded-md px-2 py-1 text-muted-foreground text-xs transition-colors hover:text-foreground"
+      href="https://reduck.ai"
+      rel="noreferrer"
+      target="_blank"
+    >
+      Powered by
+      <img alt="Reduck" className="h-4 w-auto" src="/brand/reduck-logo.png" />
+    </a>
   );
 }
 

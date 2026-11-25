@@ -23,7 +23,7 @@ import {
   TerminalIcon,
   WrenchIcon,
   XCircleIcon,
-} from "lucide-react";
+} from "@/components/icons";
 import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
 import { BashToolContent, ToolInput, ToolOutput } from "@/components/ai-elements/tool";
 import { Button } from "@/components/ui/button";
@@ -514,12 +514,8 @@ function SignInPrompt({ part }: { readonly part: EveInteractionPart }) {
   return (
     <div
       className={cn(
-        "space-y-3 rounded-md border p-3",
-        isAuthorized
-          ? "border-emerald-500/30 bg-emerald-500/5"
-          : isCompleted
-            ? "border-destructive/30 bg-destructive/5"
-            : "border-blue-500/30 bg-blue-500/5",
+        "space-y-3 rounded-lg p-3",
+        isAuthorized ? "bg-success" : isCompleted ? "bg-danger" : "bg-info",
       )}
     >
       <div className="flex items-start gap-3">
@@ -527,10 +523,10 @@ function SignInPrompt({ part }: { readonly part: EveInteractionPart }) {
           className={cn(
             "mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full",
             isAuthorized
-              ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+              ? "text-success-foreground"
               : isCompleted
-                ? "bg-destructive/10 text-destructive"
-                : "bg-blue-500/10 text-blue-700 dark:text-blue-300",
+                ? "text-destructive"
+                : "text-info-foreground",
           )}
         >
           <Icon className="size-4" />
@@ -597,7 +593,7 @@ function InteractionActions({
   );
 
   return (
-    <div className="space-y-3 rounded-md border border-yellow-500/30 bg-yellow-500/5 p-3">
+    <div className="space-y-3 rounded-lg bg-warning p-3">
       <p className="text-muted-foreground text-sm">{interaction.request.prompt}</p>
       {answer ? (
         <p className="font-medium text-sm">

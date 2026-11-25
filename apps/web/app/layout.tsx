@@ -1,33 +1,30 @@
+import { config } from "@fortawesome/fontawesome-svg-core";
+import "@fortawesome/fontawesome-svg-core/styles.css";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import type { ReactNode } from "react";
 import { Analytics } from "@/app/_components/analytics";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
 import "./globals.css";
 
-const sans = Geist({
+// The stylesheet is imported above: FontAwesome must not inject it again at runtime.
+config.autoAddCss = false;
+
+const sans = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
   weight: "variable",
   display: "swap",
 });
 
-const mono = Geist_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
-  weight: "variable",
-  display: "swap",
-});
-
 export const metadata: Metadata = {
-  title: "AG-Com",
-  description: "An agent that acts on websites with no API, with Reduck scripts.",
+  title: "ShopDuck",
+  description: "The agent that shops for you, on any website. Powered by Reduck.",
 };
 
 export default function RootLayout({ children }: { readonly children: ReactNode }) {
   return (
-    <html className={cn(sans.variable, mono.variable)} lang="en">
+    <html className={sans.variable} lang="en">
       <body>
         <Analytics />
         <TooltipProvider>{children}</TooltipProvider>

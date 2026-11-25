@@ -30,16 +30,16 @@ export const BashToolContent = ({
 
   return (
     <div className={cn("space-y-2", className)} {...props}>
-      <pre className="overflow-x-auto whitespace-pre-wrap rounded-md bg-muted/50 p-3 font-mono text-xs leading-relaxed">
+      <pre className="overflow-x-auto whitespace-pre-wrap rounded-md border p-3 font-mono text-xs leading-relaxed">
         <code>
           <span className="text-muted-foreground">$ </span>
           {command ?? "…"}
         </code>
       </pre>
       {hasResult ? (
-        <pre className="overflow-x-auto whitespace-pre-wrap rounded-md bg-muted/50 p-3 font-mono text-xs leading-relaxed">
+        <pre className="overflow-x-auto whitespace-pre-wrap rounded-md border p-3 font-mono text-xs leading-relaxed">
           <code>
-            <span className="mb-2 block font-sans text-[10px] text-muted-foreground uppercase tracking-wide">
+            <span className="mb-2 block font-sans text-caption text-muted-foreground uppercase tracking-wide">
               Output
             </span>
             {stdout ? <span className="block">{String(stdout).trimEnd()}</span> : null}
@@ -70,8 +70,8 @@ export type ToolInputProps = ComponentProps<"div"> & {
 };
 
 export const ToolInput = ({ className, input, ...props }: ToolInputProps) => (
-  <div className={cn("overflow-hidden rounded-md bg-muted/50", className)} {...props}>
-    <span className="block px-3 pt-3 font-sans text-[10px] text-muted-foreground uppercase tracking-wide">
+  <div className={cn("overflow-hidden rounded-md border", className)} {...props}>
+    <span className="block px-3 pt-3 font-sans text-caption text-muted-foreground uppercase tracking-wide">
       Parameters
     </span>
     <div>
@@ -112,12 +112,12 @@ export const ToolOutput = ({ className, output, errorText, ...props }: ToolOutpu
     <div
       className={cn(
         "overflow-x-auto rounded-md text-xs [&_table]:w-full",
-        errorText ? "bg-destructive/10 text-destructive" : "bg-muted/50 text-foreground",
+        errorText ? "bg-danger text-destructive" : "border text-foreground",
         className,
       )}
       {...props}
     >
-      <span className="block px-3 pt-3 font-sans text-[10px] text-muted-foreground uppercase tracking-wide">
+      <span className="block px-3 pt-3 font-sans text-caption text-muted-foreground uppercase tracking-wide">
         {errorText ? "Error" : "Result"}
       </span>
       {errorText && <div className="px-3 pt-2 pb-3">{errorText}</div>}

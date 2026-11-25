@@ -2,6 +2,9 @@
 @import "tw-animate-css";
 @source "../node_modules/streamdown/dist/*.js";
 
+/* The page is dark only: every `dark:` class applies. */
+@custom-variant dark (&:where(:root, :root *));
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -21,64 +24,126 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --color-success: var(--color-green-500-translucent-18);
+  --color-success-foreground: var(--color-green-300);
+  --color-danger: var(--color-red-500-translucent-18);
+  --color-info: var(--color-blue-500-translucent-18);
+  --color-info-foreground: var(--color-blue-300);
+  --color-warning: var(--color-yellow-500-translucent-18);
+  /* A deal the user asked to spot: the shop's own label, drawn to stand out. */
+  --color-deal: var(--color-orange-400);
+  --color-deal-foreground: var(--color-grey-900);
+
+  /* Tailwind's scales, drawn from Reduck's: a class keeps its name and takes Reduck's value. */
+  --text-caption: var(--font-size-caption);
+  --text-xs: var(--font-size-small);
+  --text-sm: var(--font-size-body);
+  --text-base: var(--font-size-medium);
+  --text-lg: var(--font-size-large);
+  --text-2xl: var(--font-size-title-small);
+  --text-3xl: var(--font-size-title-medium);
+  --text-5xl: var(--font-size-title-large);
+  --radius-xs: var(--radius-nested);
+  --radius-sm: var(--radius-nested);
+  --radius-md: var(--radius-tile);
+  --radius-lg: var(--radius-block);
+  --radius-xl: var(--radius-card);
+  --radius-2xl: var(--radius-card);
+  /* Depth is drawn with lines: the one shadow is what opens over the page. */
+  --shadow-2xs: none;
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: var(--popover-shadow);
+  --shadow-lg: var(--popover-shadow);
 }
 
 /* Not inline: font utilities must read the variables so each host's font loader can override them. */
 @theme {
-  --font-sans: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
 
+/*
+ * Reduck's design tokens, restated once from the design system of the Reduck monorepo
+ * (design-system/src/styles/: colorPalette.css, fontSizes.css, radius.css, controls.css), since
+ * this repository cannot import them. Only the values this app uses. Change them there first.
+ */
 :root {
-  color-scheme: light;
-  /* Soft neutral page with white elevated surfaces so cards/composer pop. */
-  --background: oklch(0.971 0 0);
-  --foreground: oklch(0.16 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.16 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.16 0 0);
-  --primary: oklch(0.19 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.94 0 0);
-  --secondary-foreground: oklch(0.19 0 0);
-  --muted: oklch(0.94 0 0);
-  --muted-foreground: oklch(0.6 0 0);
-  --accent: oklch(0.94 0 0);
-  --accent-foreground: oklch(0.19 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.916 0 0);
-  --input: oklch(0.916 0 0);
-  --ring: oklch(0.708 0 0);
-  --radius: 0.625rem;
+  --color-orange-300: #fdba74;
+  --color-orange-400: #fb923c;
+  --color-orange-500: #f97316;
+  --color-orange-600: #ea580c;
+  --color-red-400: #f87171;
+  --color-red-500: #ef4444;
+  --color-green-300: #86efac;
+  --color-green-500: #22c55e;
+  --color-blue-300: #93c5fd;
+  --color-blue-500: #3b82f6;
+  --color-yellow-500: #f59e0b;
+  --color-grey-0: #fff;
+  --color-grey-50: #f9fafb;
+  --color-grey-100: #f3f4f6;
+  --color-grey-200: #e5e7eb;
+  --color-grey-300: #d1d5db;
+  --color-grey-400: #9ca3af;
+  --color-grey-500: #6b7280;
+  --color-grey-600: #4b5563;
+  --color-grey-700: #2c3644;
+  --color-grey-800: #1f2937;
+  --color-grey-900: #111827;
+  --color-red-500-translucent-18: color-mix(in srgb, var(--color-red-500) 18%, var(--color-grey-900));
+  --color-green-500-translucent-18: color-mix(in srgb, var(--color-green-500) 18%, var(--color-grey-900));
+  --color-blue-500-translucent-18: color-mix(in srgb, var(--color-blue-500) 18%, var(--color-grey-900));
+  --color-yellow-500-translucent-18: color-mix(in srgb, var(--color-yellow-500) 18%, var(--color-grey-900));
+
+  --font-size-caption: 10px;
+  --font-size-small: 12px;
+  --font-size-body: 14px;
+  --font-size-medium: 16px;
+  --font-size-large: 18px;
+  --font-size-title-small: 22px;
+  --font-size-title-medium: 32px;
+  --font-size-title-large: 48px;
+
+  --radius-card: 12px;
+  --radius-block: 8px;
+  --radius-tile: 6px;
+  --radius-nested: 4px;
+  --radius-pill: 999px;
+
+  --popover-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+  --focus-ring: var(--color-grey-50);
 }
 
-@media (prefers-color-scheme: dark) {
+@media (width <= 640px) {
   :root {
-    color-scheme: dark;
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
+    --font-size-title-small: 20px;
+    --font-size-title-medium: 24px;
+    --font-size-title-large: 32px;
   }
+}
+
+/* shadcn's roles, in Reduck's colours: dark only, lines rather than fills, orange for the action. */
+:root {
+  color-scheme: dark;
+  --background: var(--color-grey-900);
+  --foreground: var(--color-grey-50);
+  --card: var(--color-grey-900);
+  --card-foreground: var(--color-grey-50);
+  --popover: var(--color-grey-900);
+  --popover-foreground: var(--color-grey-50);
+  --primary: var(--color-orange-400);
+  --primary-foreground: var(--color-grey-900);
+  --secondary: var(--color-grey-800);
+  --secondary-foreground: var(--color-grey-50);
+  --muted: var(--color-grey-800);
+  --muted-foreground: var(--color-grey-400);
+  --accent: var(--color-grey-800);
+  --accent-foreground: var(--color-grey-50);
+  --destructive: var(--color-red-400);
+  --border: var(--color-grey-700);
+  --input: var(--color-grey-600);
+  --ring: var(--color-grey-50);
 }
 
 * {
@@ -95,7 +160,39 @@ body {
   min-height: 100%;
   margin: 0;
   background: var(--background);
+  color: var(--foreground);
   font-family: var(--font-sans);
+  font-optical-sizing: auto;
+  font-size: var(--font-size-body);
+}
+
+/*
+ * The one texture, on the empty page only: a grid of grey dots, as on reduck.ai's hero, faded out
+ * toward the middle so the page stays bare where the user types.
+ */
+.dot-ground {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(var(--color-grey-600) 1px, transparent 1px) 0 0 / 24px 24px;
+  mask-image: radial-gradient(ellipse 75% 75% at center, transparent 40%, black 100%);
+  pointer-events: none;
+}
+
+* {
+  scrollbar-color: var(--color-grey-600) transparent;
+  scrollbar-width: thin;
+}
+
+/* Unlayered, so it wins over a component's own ring: every control shows the same focus. */
+*:focus-visible {
+  box-shadow: 0 0 0 2px var(--focus-ring);
+  outline: none;
+  transition: box-shadow 200ms;
+}
+
+h1 {
+  font-weight: 700;
 }
 
 button,
@@ -190,4 +287,18 @@ textarea {
 @utility shimmer-none {
   --shimmer-image: none;
   --shimmer-text-fill: currentColor;
+}
+
+/* A field drawn as a box around its control: the ring goes on the box, which is what the user sees. */
+[data-slot="input-group"]:has([data-slot="input-group-control"]:focus-visible) {
+  box-shadow: 0 0 0 2px var(--focus-ring);
+}
+[data-slot="input-group-control"]:focus-visible {
+  box-shadow: none;
+}
+
+/* A menu takes the focus when it opens: its items show the focus, not the panel. */
+[role="menu"]:focus-visible,
+[role="listbox"]:focus-visible {
+  box-shadow: var(--popover-shadow);
 }
