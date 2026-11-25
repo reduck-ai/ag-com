@@ -1,4 +1,4 @@
-# AG-Com
+# ShopDuck
 
 Agentic commerce: act on any website.
 
