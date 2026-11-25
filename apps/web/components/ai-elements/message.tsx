@@ -35,9 +35,10 @@ export const MessageContent = ({ children, className, ...props }: MessageContent
   <div
     className={cn(
       "is-user:dark flex w-fit min-w-0 max-w-full flex-col gap-2 overflow-hidden text-sm",
-      "group-[.is-user]:ml-auto group-[.is-user]:rounded-xl group-[.is-user]:border group-[.is-user]:border-input group-[.is-user]:px-4 group-[.is-user]:py-2.5 group-[.is-user]:text-foreground",
+      "group-[.is-user]:ml-auto group-[.is-user]:rounded-xl group-[.is-user]:bg-[var(--color-grey-700)] group-[.is-user]:px-4 group-[.is-user]:py-2.5 group-[.is-user]:text-foreground",
       // Streamdown links default to text-primary, the orange kept for the one action of the page.
       "[&_[data-streamdown=link]]:text-current [&_[data-streamdown=link]]:underline [&_[data-streamdown=link]]:decoration-muted-foreground",
+      "[&_[data-streamdown=table-header]]:bg-secondary",
       "group-[.is-assistant]:w-full group-[.is-assistant]:text-foreground",
       "group-data-[optimistic=true]:opacity-70",
       className,

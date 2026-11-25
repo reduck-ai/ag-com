@@ -26,7 +26,7 @@ const { registry } = defineRegistry(catalog, {
       const host = hostOf(props.href);
       return props.href ? (
         <a
-          className={cn(className, "hover:border-muted-foreground/60")}
+          className={cn(className, "hover:border-[var(--color-grey-500)]")}
           href={props.href}
           rel="noreferrer"
           target="_blank"

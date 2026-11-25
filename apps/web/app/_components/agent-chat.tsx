@@ -154,7 +154,7 @@ export function AgentChat({
   const composer = (
     <PromptInput onSubmit={handleSubmit}>
       <PromptInputTextarea
-        className={showConversationLayout ? undefined : "min-h-24 px-3.5 py-3.5 md:text-base"}
+        className={showConversationLayout ? "md:text-base" : "min-h-24 px-3.5 py-3.5 md:text-lg"}
         disabled={isResuming}
         onChange={(event) => setHasInputText(event.currentTarget.value.trim().length > 0)}
         placeholder={isEmpty ? "What are you looking for?" : "Send a message…"}
@@ -223,7 +223,7 @@ export function AgentChat({
         className={cn(
           "mx-auto w-full px-4 sm:px-6",
           showConversationLayout
-            ? "fixed bottom-0 left-1/2 z-20 flex max-w-3xl -translate-x-1/2 flex-col items-center gap-2 bg-gradient-to-t from-background via-background to-transparent pt-4 pb-3"
+            ? "fixed bottom-0 left-1/2 z-20 max-w-3xl -translate-x-1/2 bg-gradient-to-t from-background via-background to-transparent pt-4 pb-6"
             : "flex max-w-[39rem] flex-1 flex-col items-center justify-center gap-8 pb-[10vh]",
         )}
       >
@@ -233,7 +233,6 @@ export function AgentChat({
           </h1>
         )}
         <div className="w-full">{composer}</div>
-        {showConversationLayout ? <PoweredByReduck /> : null}
       </div>
       {showConversationLayout ? null : (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2">
