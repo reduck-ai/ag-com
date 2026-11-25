@@ -3,3 +3,7 @@ allowBuilds:
 
 minimumReleaseAgeExclude:
   - '@reduck-ai/sdk@2.0.0'
+
+ignoredOptionalDependencies:
+  - "@mongodb-js/zstd"
+  - "node-liblzma"
