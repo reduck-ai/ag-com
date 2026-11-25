@@ -16,7 +16,7 @@ The agent uses only the scripts that need no sign-in and change nothing on the w
 | File                              | Role                                                                                         |
 | --------------------------------- | -------------------------------------------------------------------------------------------- |
 | `agent/lib/reduck.ts`             | The Reduck client.                                                                           |
-| `agent/tools/list_scripts.ts`     | Finds scripts, official ones and your account's.                                             |
+| `agent/tools/list_scripts.ts`     | Finds scripts.                                                                               |
 | `agent/tools/read_script.ts`      | A script's contract: its args and what it returns.                                           |
 | `agent/tools/run_script.ts`       | Runs a script on a cloud browser.                                                            |
 | `agent/tools/read_run_results.ts` | A run's result or error.                                                                     |
@@ -48,7 +48,7 @@ curl -N http://localhost:2000/eve/v1/session/<sessionId>/stream   # the tool cal
 
 To chat in a browser instead, with the products as cards, run `pnpm dev:web`, then open http://localhost:3000.
 
-`REDUCK_API_URL` points the agent at another Reduck server. Leave it unset for reduck.ai.
+`REDUCK_API_URL` points the agent at another Reduck server. Leave it unset for reduck.ai. The agent finds and runs the official scripts only: `REDUCK_CATALOGUE_ONLY=false` adds your account's scripts.
 
 ## Deploy
 

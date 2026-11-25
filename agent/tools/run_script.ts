@@ -1,6 +1,6 @@
 import { defineTool } from "eve/tools";
 import { z } from "zod";
-import { opts, outcome, reduck } from "../lib/reduck";
+import { catalogueOnly, opts, outcome, reduck } from "../lib/reduck";
 
 // Never a paired device: its browser is signed in as this API key's owner, not as the caller.
 export default defineTool({
@@ -26,6 +26,8 @@ export default defineTool({
 		const v = script.current_version;
 		if (!v)
 			throw new Error(`${handle}/${host}/${slug} has no version to run.`);
+		if (catalogueOnly() && script.author.approval !== "official")
+			throw new Error(`${handle}/${host}/${slug} is not an official script: this agent cannot run it.`);
 		if (v.logged_in !== false)
 			throw new Error(`${handle}/${host}/${slug} needs a sign-in: this agent cannot run it.`);
 		if (v.side_effects !== "none")

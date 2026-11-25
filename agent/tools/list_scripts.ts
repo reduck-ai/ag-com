@@ -1,22 +1,23 @@
 import { defineTool } from "eve/tools";
 import { z } from "zod";
-import { opts, reduck } from "../lib/reduck";
+import { catalogueOnly, opts, reduck } from "../lib/reduck";
 
 export default defineTool({
 	description:
-		"Find Reduck scripts: the official ones and those of your account. Each script does one thing on one website. Read a script's contract with read_script before you run it.",
+		"Find Reduck scripts. Each script does one thing on one website. Read a script's contract with read_script before you run it.",
 	inputSchema: z.object({
-		q: z.string().optional().describe("Words that describe the task."),
-		host: z.string().optional().describe("The website, such as luma.com."),
-		catalogue_only: z
-			.boolean()
-			.default(true)
-			.describe("Only the official scripts. False adds those of your account.")
+		q: z
+			.string()
+			.optional()
+			.describe(
+				"Words for what the script does on the site, such as \"search products\". Not the item you look for: give that to the script."
+			),
+		host: z.string().optional().describe("The website, such as luma.com.")
 	}),
-	async execute({ q, host, catalogue_only }) {
+	async execute({ q, host }) {
 		const { data } = await reduck.listAllScripts({
 			...opts(),
-			query: { q, host, catalogue_only: `${catalogue_only}`, promoted: "true", page_size: 20 }
+			query: { q, host, catalogue_only: `${catalogueOnly()}`, promoted: "true", page_size: 20 }
 		});
 		// Only what run_script accepts: no script that needs a sign-in, none that writes.
 		return data.data

@@ -14,6 +14,9 @@ export function opts() {
 	return { client, throwOnError: true } as const;
 }
 
+// The deployer's choice, not the model's: "false" adds the scripts of the API key's account.
+export const catalogueOnly = () => process.env.REDUCK_CATALOGUE_ONLY !== "false";
+
 // A run as the model reads it: the script's own result, or its own error rather than the generic
 // `external_message`, since the exact reason is what tells whether another call can succeed.
 export function outcome(run: reduck.Run) {
