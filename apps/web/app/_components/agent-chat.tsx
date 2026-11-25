@@ -11,7 +11,7 @@ import {
   type Activity,
 } from "eve/events";
 import { useEveAgent } from "eve/react";
-import { AlertCircleIcon, BrainIcon, CloseIcon, MenuIcon, PlusIcon, SquareIcon } from "@/components/icons";
+import { AlertCircleIcon, BrainIcon, MenuIcon, PlusIcon, SquareIcon } from "@/components/icons";
 import { Dialog } from "radix-ui";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -111,6 +111,19 @@ export function AgentChat({
       setCancellationError(toErrorMessage(error));
     });
   };
+
+  // Escape stops the agent, as the Stop button does, unless it closes something open over the chat.
+  useEffect(() => {
+    if (!turnOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape" || event.defaultPrevented) return;
+      if (document.querySelector('[role="dialog"], [role="menu"]')) return;
+      event.preventDefault();
+      requestCancellation();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  });
 
   const handleSubmit = async (message: PromptInputMessage) => {
     const text = message.text.trim();
@@ -260,6 +273,7 @@ function ComposerAction({
   return (
     <PromptInputButton
       aria-label="Stop"
+      title="Stop (Esc)"
       className="absolute right-2 bottom-2"
       onClick={onCancel}
       variant="outline"
@@ -364,7 +378,7 @@ function ChatsPanel({
           </Button>
           {chats.length > 0 ? (
             <nav className="flex min-h-0 flex-col gap-2">
-              <h2 className="m-0 px-2 font-medium text-muted-foreground text-xs">Chats</h2>
+              <h2 className="m-0 px-2 font-medium text-[var(--color-grey-300)] text-xs">Chats</h2>
               <ul className="m-0 flex list-none flex-col gap-0.5 overflow-y-auto p-0">
                 {chats.map((chat) => (
                   <li key={chat.sessionId}>
@@ -380,43 +394,9 @@ function ChatsPanel({
               </ul>
             </nav>
           ) : null}
-          <LocalChatsNotice />
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
-  );
-}
-
-const NOTICE_DISMISSED = "ag-com:local-chats-notice-dismissed";
-
-/** Says where the list of chats lives, until the visitor closes it. */
-function LocalChatsNotice() {
-  const [dismissed, setDismissed] = useState(true);
-  useEffect(() => {
-    try {
-      setDismissed(localStorage.getItem(NOTICE_DISMISSED) === "1");
-    } catch {
-      setDismissed(false);
-    }
-  }, []);
-  if (dismissed) return null;
-  return (
-    <div className="mt-auto flex items-start gap-2 rounded-lg bg-secondary p-3 text-muted-foreground text-sm">
-      <p className="m-0 flex-1">Your chat history is saved in this browser only.</p>
-      <button
-        aria-label="Close"
-        className="-m-1 rounded-sm p-1 transition-colors hover:text-foreground"
-        onClick={() => {
-          setDismissed(true);
-          try {
-            localStorage.setItem(NOTICE_DISMISSED, "1");
-          } catch {}
-        }}
-        type="button"
-      >
-        <CloseIcon className="size-3" />
-      </button>
-    </div>
   );
 }
 
@@ -441,11 +421,11 @@ const EXAMPLES = [
 
 function Examples({ onPick }: { readonly onPick: (text: string) => void }) {
   return (
-    <ul className="m-0 -mt-3 flex list-none flex-wrap justify-center gap-x-4 gap-y-1 p-0">
+    <ul className="m-0 -mt-3 flex list-none flex-wrap justify-center gap-2 p-0">
       {EXAMPLES.map((text) => (
         <li key={text}>
           <button
-            className="rounded-md px-1 py-0.5 text-muted-foreground text-sm transition-colors hover:text-foreground"
+            className="rounded-full border px-3 py-1.5 text-muted-foreground text-sm transition-colors hover:border-[var(--color-grey-500)] hover:text-foreground"
             onClick={() => onPick(text)}
             type="button"
           >
