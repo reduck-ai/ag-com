@@ -1,6 +1,6 @@
 import { defineTool } from "eve/tools";
 import { z } from "zod";
-import { catalogueOnly, opts, outcome, reduck } from "../lib/reduck";
+import { catalogueOnly, opts, outcome, reduck, runIds } from "../lib/reduck";
 
 // Never a paired device: its browser is signed in as this API key's owner, not as the caller.
 export default defineTool({
@@ -38,6 +38,7 @@ export default defineTool({
 			path: { handle, host, slug },
 			body: { ...body, browser: "managed" }
 		});
+		runIds.update((ids) => [...ids, run.id]);
 		return outcome(run);
 	}
 });

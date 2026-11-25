@@ -1,4 +1,5 @@
 import * as reduck from "@reduck-ai/sdk";
+import { defineState } from "eve/context";
 
 export { reduck };
 
@@ -16,6 +17,14 @@ export function opts() {
 
 // The deployer's choice, not the model's: "false" adds the scripts of the API key's account.
 export const catalogueOnly = () => process.env.REDUCK_CATALOGUE_ONLY !== "false";
+
+// Every chat runs as the API key's account, which may read any of its runs: a chat reads only the
+// runs it started.
+export const runIds = defineState<string[]>("ag-com.run_ids", () => []);
+export function runPath(run_id: string) {
+	if (!runIds.get().includes(run_id)) throw new Error(`Run ${run_id} was not started in this chat.`);
+	return { run_id };
+}
 
 // A run as the model reads it: the script's own result, or its own error rather than the generic
 // `external_message`, since the exact reason is what tells whether another call can succeed.
