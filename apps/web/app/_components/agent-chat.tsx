@@ -12,6 +12,7 @@ import {
 } from "eve/events";
 import { useEveAgent } from "eve/react";
 import { AlertCircleIcon, BrainIcon, HistoryIcon, PlusIcon, SquareIcon } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   Conversation,
@@ -44,24 +45,15 @@ import { WEB_CHAT_AGENT } from "@/app/eve-agent";
 const DEFAULT_AGENT_NAME = "AG-Com";
 const AGENT_NAME = WEB_CHAT_AGENT ?? DEFAULT_AGENT_NAME;
 
-// A session has no URL to come back to: anyone holding a session id may read and continue it,
+// A chat's URL holds its session id, and anyone holding a session id may read and continue it,
 // since every visitor is anonymous. The browser that started a chat lists it; eve keeps its
 // messages.
-export function AgentChat({ sessionless = false }: { readonly sessionless?: boolean }) {
-  const [sessionId, setSessionId] = useState<string>();
-  return (
-    <Chat key={sessionId} onOpen={setSessionId} sessionId={sessionId} sessionless={sessionless} />
-  );
-}
-
-function Chat({
-  sessionless,
+export function AgentChat({
+  sessionless = false,
   sessionId,
-  onOpen,
 }: {
-  readonly sessionless: boolean;
-  readonly sessionId: string | undefined;
-  readonly onOpen: (sessionId: string) => void;
+  readonly sessionless?: boolean;
+  readonly sessionId?: string;
 }) {
   const [cancellationError, setCancellationError] = useState<string>();
   const [hasInputText, setHasInputText] = useState(false);
@@ -148,7 +140,15 @@ function Chat({
     }
 
     const delivery = await agent.send(message.files.length === 0 ? text : parts, options);
-    if (isEmpty) saveChat({ sessionId: delivery.sessionId, title: text || "Files" });
+    if (!isEmpty) return;
+    saveChat({ sessionId: delivery.sessionId, title: text || "Files" });
+    // Next.js patches `history`: its router would remount the page and cut off the reply.
+    History.prototype.replaceState.call(
+      window.history,
+      window.history.state,
+      "",
+      `/s/${encodeURIComponent(delivery.sessionId)}`,
+    );
   };
 
   const composer = (
@@ -170,7 +170,7 @@ function Chat({
   return (
     <main className="flex h-dvh flex-col overflow-hidden bg-background text-foreground">
       {showConversationLayout || chats.length > 0 ? (
-        <ChatHeader canStartNewChat={activeSessionId !== undefined} chats={chats} onOpen={onOpen} />
+        <ChatHeader canStartNewChat={activeSessionId !== undefined} chats={chats} />
       ) : null}
 
       {showConversationLayout ? (
@@ -284,11 +284,9 @@ function ErrorMessage({ message }: { readonly message: string }) {
 function ChatHeader({
   canStartNewChat,
   chats,
-  onOpen,
 }: {
   readonly canStartNewChat: boolean;
   readonly chats: readonly SavedChat[];
-  readonly onOpen: (sessionId: string) => void;
 }) {
   return (
     <header className="pointer-events-none fixed top-0 right-0 left-0 z-20 h-14">
@@ -308,8 +306,10 @@ function ChatHeader({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="max-w-72">
               {chats.map((chat) => (
-                <DropdownMenuItem key={chat.sessionId} onSelect={() => onOpen(chat.sessionId)}>
-                  <span className="truncate">{chat.title}</span>
+                <DropdownMenuItem asChild key={chat.sessionId}>
+                  <Link href={`/s/${encodeURIComponent(chat.sessionId)}`}>
+                    <span className="truncate">{chat.title}</span>
+                  </Link>
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>

@@ -23,6 +23,11 @@ export function Analytics() {
       // recording of it, and clicks are captured without the text they hold.
       disable_session_recording: true,
       mask_all_text: true,
+      // A chat's URL holds its session id, which reads the chat: PostHog gets `/s/:id` instead.
+      before_send: ({ timestamp, ...event }) => ({
+        ...JSON.parse(JSON.stringify(event).replaceAll(/\/s\/[^/?#"\\]+/g, "/s/:id")),
+        timestamp,
+      }),
     });
     posthog.register({ app: "ag-com" });
   }, []);
