@@ -62,4 +62,6 @@ The chat is open to anyone, so three limits cap what it costs:
 
 When one cap is reached, the chat stops for every visitor until the next period.
 
+A chat's URL holds its session id, which is enough to read and continue the chat. eve does not check who owns a session: if you add sign-in, check it in `agent/channels/eve.ts`.
+
 See [eve's deployment guide](https://eve.dev/docs/guides/deployment) to host it yourself.
