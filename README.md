@@ -27,7 +27,7 @@ ShopDuck was designed with two goals in mind:
 
 - For end users: build the best agent for shopping.
     - **Highest store coverage**: Amazon, Walmart, Best Buy, Etsy and more, including stores that block other agents.
-    - **Exact data**: prices and deals come from the store's page, read by a script, not guessed from screenshots.
+    - **No hallucinated data**: data like prices are extracted programmatically with scripts versus other agents reading manually.
     - **6x faster than Muse**: ShopDuck runs scripts instead of an agent loop that acts, then reads screenshots.
 - For builders: show with an open-source project how Reduck can be combined with frameworks like Vercel [eve](https://eve.dev) to create harnesses connected to any site.
     - **3x cheaper with Reduck scripts vs manual browsing**: sites are mapped ahead of time into Reduck scripts, so the agent reads no screenshots and generates no browser actions, which takes far fewer tokens.
@@ -44,7 +44,7 @@ ShopDuck was designed with two goals in mind:
     pnpm dev:web
     ```
 
-## Roadmap
+## Feature roadmap
 
 - [ ] Core stores covered
     - [x] Amazon
@@ -60,11 +60,11 @@ ShopDuck was designed with two goals in mind:
     - [ ] Home Depot
     - [ ] Costco
     - [ ] Wayfair
-- [x] Shops in your country: detected on your first visit, changed in the side menu
-- [x] Deals as the store shows them: price, list price, deal label
+- [x] Country detection and setup for relevant suggestions
+- [x] Read only flows like search, product description and review
+- [ ] Write flows like adding to cart and checkout
 - [ ] Memory for shopping preferences
 - [ ] Caching of search / product results
-- [ ] Purchase
 - [ ] Benchmarks with open data and reproducible code
     - [ ] ShopDuck versus B2C agents like Muse
     - [ ] ShopDuck with Reduck versus manual browsing
