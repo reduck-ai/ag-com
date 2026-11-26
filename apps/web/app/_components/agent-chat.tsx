@@ -44,16 +44,27 @@ const AGENT_NAME = WEB_CHAT_AGENT ?? DEFAULT_AGENT_NAME;
 // since every visitor is anonymous. The browser that started a chat lists it; eve keeps its
 // messages.
 export function AgentChat({
+  country: detected,
   sessionless = false,
   sessionId,
 }: {
+  // The visitor's country from their IP, which becomes the browser's choice until they change it.
+  readonly country: string | null;
   readonly sessionless?: boolean;
   readonly sessionId?: string;
 }) {
   const [cancellationError, setCancellationError] = useState<string>();
   const [hasInputText, setHasInputText] = useState(false);
   const [chats, setChats] = useState<readonly SavedChat[]>([]);
-  useEffect(() => setChats(savedChats()), []);
+  const [country, setCountry] = useState<string | null>(null);
+  useEffect(() => {
+    setChats(savedChats());
+    setCountry(savedCountry(detected));
+  }, [detected]);
+  const chooseCountry = (code: string) => {
+    localStorage.setItem(COUNTRY, code);
+    setCountry(code);
+  };
   const agent = useEveAgent({
     agent: WEB_CHAT_AGENT,
     initialSession: sessionId === undefined ? undefined : { sessionId, streamIndex: 0 },
@@ -131,7 +142,10 @@ export function AgentChat({
 
     setHasInputText(false);
     setCancellationError(undefined);
-    const options = turnOpen ? { turnPolicy: "steer" as const } : undefined;
+    const options = {
+      ...(turnOpen ? { turnPolicy: "steer" as const } : {}),
+      ...(country ? { clientContext: { country } } : {}),
+    };
     captureMessageSent({ withFiles: message.files.length > 0, steer: turnOpen });
 
     const parts: MessagePart[] = [];
@@ -182,6 +196,8 @@ export function AgentChat({
       <ChatHeader
         activeSessionId={activeSessionId}
         chats={chats}
+        country={country}
+        onCountry={chooseCountry}
         showLogo={showConversationLayout}
       />
 
@@ -309,17 +325,26 @@ function ErrorMessage({ message }: { readonly message: string }) {
 function ChatHeader({
   activeSessionId,
   chats,
+  country,
+  onCountry,
   showLogo,
 }: {
   readonly activeSessionId: string | undefined;
   readonly chats: readonly SavedChat[];
+  readonly country: string | null;
+  readonly onCountry: (code: string) => void;
   // The empty page shows the logo large, under the header.
   readonly showLogo: boolean;
 }) {
   return (
     <header className="pointer-events-none fixed top-0 right-0 left-0 z-20 h-14">
       <div className="relative mx-auto flex h-full w-full max-w-3xl items-center justify-center bg-background px-24">
-        <ChatsPanel activeSessionId={activeSessionId} chats={chats} />
+        <ChatsPanel
+          activeSessionId={activeSessionId}
+          chats={chats}
+          country={country}
+          onCountry={onCountry}
+        />
         {showLogo ? (
           <a
             aria-label={AGENT_NAME}
@@ -334,13 +359,17 @@ function ChatHeader({
   );
 }
 
-/** A panel from the left: a new chat, then the chats this browser started. */
+/** A panel from the left: a new chat, the chats this browser started, then the country. */
 function ChatsPanel({
   activeSessionId,
   chats,
+  country,
+  onCountry,
 }: {
   readonly activeSessionId: string | undefined;
   readonly chats: readonly SavedChat[];
+  readonly country: string | null;
+  readonly onCountry: (code: string) => void;
 }) {
   return (
     <Dialog.Root>
@@ -398,6 +427,21 @@ function ChatsPanel({
               </ul>
             </nav>
           ) : null}
+          <label className="mt-auto flex flex-col gap-2 px-2 font-medium text-[var(--color-grey-300)] text-xs">
+            Country
+            <select
+              className="rounded-lg border bg-background px-2 py-1.5 font-normal text-foreground text-sm"
+              onChange={(event) => onCountry(event.currentTarget.value)}
+              value={country ?? ""}
+            >
+              {country ? null : <option value="">Not set</option>}
+              {[...new Set([...(country ? [country] : []), ...COUNTRIES])].map((code) => (
+                <option key={code} value={code}>
+                  {REGIONS.of(code)}
+                </option>
+              ))}
+            </select>
+          </label>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
@@ -496,6 +540,21 @@ function savedChats(): SavedChat[] {
 function saveChat(chat: SavedChat) {
   localStorage.setItem(CHATS, JSON.stringify([chat, ...savedChats()]));
 }
+
+// The country the agent shops in. The first visit stores the IP's country.
+const COUNTRY = "shopduck:country";
+function savedCountry(detected: string | null): string | null {
+  const country = localStorage.getItem(COUNTRY) ?? detected;
+  if (country) localStorage.setItem(COUNTRY, country);
+  return country;
+}
+
+// The countries Amazon has a store in, by ISO code.
+const COUNTRIES = [
+  "US", "CA", "MX", "BR", "GB", "IE", "FR", "DE", "IT", "ES", "NL", "BE", "SE", "PL", "TR",
+  "AE", "SA", "EG", "IN", "JP", "SG", "AU",
+];
+const REGIONS = new Intl.DisplayNames(["en"], { type: "region" });
 
 function toErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : "Unable to cancel the response.";

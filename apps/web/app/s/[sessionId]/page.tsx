@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import { AgentChat } from "@/app/_components/agent-chat";
 
 export default async function SessionPage({
@@ -6,5 +7,11 @@ export default async function SessionPage({
   readonly params: Promise<{ readonly sessionId: string }>;
 }) {
   const { sessionId } = await params;
-  return <AgentChat key={sessionId} sessionId={sessionId} />;
+  return (
+    <AgentChat
+      country={(await headers()).get("x-vercel-ip-country")}
+      key={sessionId}
+      sessionId={sessionId}
+    />
+  );
 }
