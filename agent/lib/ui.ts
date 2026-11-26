@@ -13,7 +13,7 @@ export const catalog = defineCatalog(schema, {
 		Card: {
 			props: z.object({ href: z.string().nullable() }),
 			slots: ["default"],
-			description: "One item. With href, the whole card links to its page."
+			description: "One item. With href, the whole card links to its page and shows its shop."
 		},
 		Row: { props: z.object({}), slots: ["default"], description: "Elements on one line." },
 		Image: { props: z.object({ src: z.string(), alt: z.string() }), description: "A picture." },

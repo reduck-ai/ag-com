@@ -37,10 +37,9 @@ One way to show a product, from a result that has a deal:
 		"c1": {
 			"type": "Card",
 			"props": { "href": "https://www.amazon.com/dp/B0D1XD1ZV3" },
-			"children": ["img", "site", "name", "price", "deal"]
+			"children": ["img", "name", "price", "deal"]
 		},
 		"img": { "type": "Image", "props": { "src": "https://m.media-amazon.com/images/I/61SUj2aKoEL.jpg", "alt": "AirPods 4" } },
-		"site": { "type": "Text", "props": { "text": "Amazon", "style": "muted" } },
 		"name": { "type": "Text", "props": { "text": "Apple AirPods 4", "style": "title" } },
 		"price": { "type": "Row", "props": {}, "children": ["now", "was"] },
 		"now": { "type": "Text", "props": { "text": "$99.00", "style": "strong" } },
