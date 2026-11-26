@@ -1,4 +1,11 @@
-# ShopDuck: the agent that shops anywhere to get you the best deals
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/shopduck-logo-dark.svg">
+    <img src="docs/shopduck-logo-light.svg" alt="ShopDuck" height="56">
+  </picture>
+</p>
+<h3 align="center">The agent that shops anywhere to get you the best deals</h3>
+<p align="center"><sub>Powered by <a href="https://reduck.ai">Reduck</a></sub></p>
 
 Finding the best products at the best price means exploring many stores, but current agents like Muse are blocked on major ones.
 
