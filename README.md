@@ -21,9 +21,9 @@ ShopDuck was designed with two goals in mind:
 - For end users: build the best agent for shopping.
     - **Highest store coverage**: Amazon, Walmart, Best Buy, Etsy and more, including stores that block other agents.
     - **Exact data**: prices and deals come from the store's page, read by a script, not guessed from screenshots.
-    - **About 6x faster than Muse in our benchmark**: ShopDuck runs scripts instead of an agent loop that acts, then reads screenshots.
+    - **6x faster than Muse**: ShopDuck runs scripts instead of an agent loop that acts, then reads screenshots.
 - For builders: show with an open-source project how Reduck can be combined with frameworks like Vercel [eve](https://eve.dev) to create harnesses connected to any site.
-    - **Cheaper**: sites are mapped ahead of time into Reduck scripts, so the agent reads no screenshots and generates no browser actions, which takes far fewer tokens.
+    - **3x cheaper with Reduck scripts vs manual browsing**: sites are mapped ahead of time into Reduck scripts, so the agent reads no screenshots and generates no browser actions, which takes far fewer tokens.
     - **Customizable**: the code is open source. Inspect it, fork it, add features or other scripts.
 
 ## Run it locally
@@ -39,19 +39,28 @@ ShopDuck was designed with two goals in mind:
 
 ## Roadmap
 
-- [ ] Core stores (US)
+- [ ] Core stores covered
     - [x] Amazon
     - [x] Walmart
     - [x] Target
     - [x] Best Buy
+    - [x] Lowe's
+    - [x] Etsy
+    - [x] Nike
+    - [x] Newegg
+    - [x] Apple
+    - [ ] eBay
+    - [ ] Home Depot
+    - [ ] Costco
+    - [ ] Wayfair
 - [x] Shops in your country: detected on your first visit, changed in the side menu
 - [x] Deals as the store shows them: price, list price, deal label
-- [ ] Memory for preferences
+- [ ] Memory for shopping preferences
 - [ ] Caching of search / product results
 - [ ] Purchase
-- [ ] Benchmarks
-    - [ ] Open data and reproducible code for comparing ShopDuck versus B2C agents like Muse
-    - [ ] Open data and reproducible code for comparing the impact of using Reduck versus manual browsing
+- [ ] Benchmarks with open data and reproducible code
+    - [ ] ShopDuck versus B2C agents like Muse
+    - [ ] ShopDuck with Reduck versus manual browsing
 
 ## Contribute
 
