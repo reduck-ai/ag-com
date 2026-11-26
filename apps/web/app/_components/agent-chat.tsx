@@ -11,7 +11,15 @@ import {
   type Activity,
 } from "eve/events";
 import { useEveAgent } from "eve/react";
-import { AlertCircleIcon, BrainIcon, MenuIcon, PlusIcon, SquareIcon } from "@/components/icons";
+import {
+  AlertCircleIcon,
+  BrainIcon,
+  DiscordIcon,
+  GitHubIcon,
+  MenuIcon,
+  PlusIcon,
+  SquareIcon,
+} from "@/components/icons";
 import { Dialog } from "radix-ui";
 import Link from "next/link";
 import { type ReactNode, useEffect, useState } from "react";
@@ -260,8 +268,14 @@ export function AgentChat({
         )}
       </div>
       {showConversationLayout ? null : (
-        <footer className="fixed bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-1 whitespace-nowrap text-muted-foreground text-xs">
+        <footer className="fixed bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-1 whitespace-nowrap text-[13px] text-muted-foreground">
           <PoweredByReduck />
+          <FooterLink external href="https://github.com/reduck-ai/shopduck" label="GitHub">
+            <GitHubIcon className="size-[15px]" />
+          </FooterLink>
+          <FooterLink external href="https://discord.gg/reduck" label="Discord">
+            <DiscordIcon className="size-[15px]" />
+          </FooterLink>
           <span aria-hidden>·</span>
           <FooterLink href="/terms">Terms</FooterLink>
           <span aria-hidden>·</span>
@@ -460,15 +474,19 @@ function FooterLink({
   children,
   external = false,
   href,
+  label,
 }: {
   readonly children: ReactNode;
   readonly external?: boolean;
   readonly href: string;
+  readonly label?: string;
 }) {
   return (
     <a
-      className="rounded-md px-1 py-1 transition-colors hover:text-foreground"
+      aria-label={label}
+      className="flex items-center rounded-md px-1 py-1 transition-colors hover:text-foreground"
       href={href}
+      title={label}
       {...(external ? { rel: "noreferrer", target: "_blank" } : {})}
     >
       {children}

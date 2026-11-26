@@ -1,4 +1,5 @@
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
+import { faDiscord, faGithub } from "@fortawesome/free-brands-svg-icons";
 import {
   faCircle,
   faCircleCheck,
@@ -52,9 +53,11 @@ export const ChevronRightIcon = icon(faChevronRight);
 export const ChevronUpIcon = icon(faChevronUp);
 export const CircleIcon = icon(faCircle);
 export const CopyIcon = icon(faCopy);
+export const DiscordIcon = icon(faDiscord);
 export const DownloadIcon = icon(faDownload);
 export const ExternalLinkIcon = icon(faArrowUpRightFromSquare);
 export const FileIcon = icon(faFile);
+export const GitHubIcon = icon(faGithub);
 export const ImageIcon = icon(faImage);
 export const KeyRoundIcon = icon(faKey);
 export const MenuIcon = icon(faBars);
