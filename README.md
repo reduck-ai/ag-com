@@ -1,15 +1,39 @@
 # ShopDuck
 
-Agentic commerce: act on any website.
+ShopDuck is the agent that shops anywhere to get you the best deals.
 
-An [eve](https://eve.dev) agent that does things on websites with no API (Luma, Amazon, ...). [eve connections](https://eve.dev/docs/connections) reach services that have an MCP server or an OpenAPI document. [Reduck](https://reduck.ai) scripts reach the rest.
+Finding the best products at the best price means exploring many stores, but current agents like Muse are blocked on major ones.
 
-```text
-You:    What tech events are in Paris this week?
-Agent:  On Luma, 5 events: ...
-```
+ShopDuck solves this with [Reduck](https://reduck.ai/), which provides a [library of scripts](https://docs.reduck.ai/core-concepts/#official-scripts) specific to each store that run on stealthy cloud browsers for fast and accurate results.
 
-The agent uses only the scripts that need no sign-in and change nothing on the website. They run on a cloud browser.
+Same question to both agents:
+
+![ShopDuck finds 6 YETI deals on Amazon in 24 s; Muse finds none in 15 min](docs/shopduck-vs-muse.png)
+
+## Try it on [shopduck.ai](https://shopduck.ai/)
+
+## Who is this for
+
+ShopDuck was designed with two goals in mind:
+
+- For end users: build the best agent for shopping.
+    - **Highest store coverage**: Amazon, Walmart, Best Buy, Etsy and more, including stores that block other agents.
+    - **Exact data**: prices and deals come from the store's page, read by a script, not guessed from screenshots.
+    - **About 6x faster than Muse in our benchmark**: ShopDuck runs scripts instead of an agent loop that acts, then reads screenshots.
+- For builders: show with an open-source project how Reduck can be combined with frameworks like [Vercel eve](https://eve.dev) to create harnesses connected to any site.
+    - **Cheaper**: sites are mapped ahead of time into Reduck scripts, so the agent reads no screenshots and generates no browser actions, which takes far fewer tokens.
+    - **Customizable**: the code is open source. Inspect it, fork it, add features or other scripts.
+
+## Run it locally
+
+1. Create an API key on [reduck.ai](https://reduck.ai), and one on the [Vercel AI Gateway](https://vercel.com/docs/ai-gateway).
+2. Copy `.env.example` to `.env.local`, and put them in it.
+3. Start the chat, then open [http://localhost:3000](http://localhost:3000):
+
+    ```bash
+    pnpm install
+    pnpm dev:web
+    ```
 
 ## How it works
 
@@ -27,41 +51,25 @@ The agent uses only the scripts that need no sign-in and change nothing on the w
 | `agent/agent.ts`                  | The model: Gemini, through the [Vercel AI Gateway](https://vercel.com/docs/ai-gateway).      |
 | `agent/channels/eve.ts`           | Who may chat: anyone. See [Deploy](#deploy) for what caps the cost.                          |
 
-## Run it
-
-1. Create an API key on [reduck.ai](https://reduck.ai), and one on the [Vercel AI Gateway](https://vercel.com/docs/ai-gateway).
-2. Copy `.env.example` to `.env.local`, and put them in it.
-3. Start the agent, and chat with it in the terminal:
-
-    ```bash
-    pnpm install
-    pnpm dev
-    ```
-
-To chat over HTTP instead, from a script or a test, start it with `pnpm dev --no-ui`, then:
-
-```bash
-curl -X POST http://localhost:2000/eve/v1/session -H 'Content-Type: application/json' \
-  -d '{"message":"Top 3 wireless earbuds, with their prices"}'   # returns a sessionId
-curl -N http://localhost:2000/eve/v1/session/<sessionId>/stream   # the tool calls and the reply
-```
-
-To chat in a browser instead, with the products as cards, run `pnpm dev:web`, then open http://localhost:3000.
-
-`REDUCK_API_URL` points the agent at another Reduck server. Leave it unset for reduck.ai. The agent finds and runs the official scripts only: `REDUCK_CATALOGUE_ONLY=false` adds your account's scripts.
-
 ## Deploy
 
-The Vercel project builds the browser chat and the agent together (`vercel.json`), on each push. Set `REDUCK_API_KEY`, and optionally `NEXT_PUBLIC_POSTHOG_KEY`, in its environment variables. The model needs no key there: the deployment signs in to the AI Gateway with OIDC.
+To deploy it on Vercel, import the repo and set `REDUCK_API_KEY` in the project's environment variables. The model needs no key there: the deployment signs in to the AI Gateway with OIDC.
 
-The chat is open to anyone, so three limits cap what it costs:
+The chat is open to anyone. Three limits cap the cost: the plan of the Reduck account that owns `REDUCK_API_KEY`, a budget on the AI Gateway, and a rate limit per IP in the Vercel firewall.
 
-- **Reduck**: the plan of the account that owns `REDUCK_API_KEY`. Its monthly quota of cloud browser minutes and runs is the cap.
-- **The model**: a budget on the AI Gateway.
-- **One visitor**: a rate limit per IP in the Vercel firewall: 40 POST on `/eve/v1/*` per 10 minutes, about 20 messages, since starting a chat takes one too.
+A chat's URL holds its session id: anyone with the link can read and continue the chat. eve does not check who owns a session: if you add sign-in, check it in `agent/channels/eve.ts`.
 
-When one cap is reached, the chat stops for every visitor until the next period.
+## Roadmap
 
-A chat's URL holds its session id, which is enough to read and continue the chat. eve does not check who owns a session: if you add sign-in, check it in `agent/channels/eve.ts`.
+- [ ] Adding more sites
+- [ ] Memory for preferences
+- [ ] Caching of search / product results
+- [ ] Purchase
+- [ ] Benchmarks
+    - [ ] Open data and reproducible code for comparing ShopDuck versus B2C agents like Muse
+    - [ ] Open data and reproducible code for comparing the impact of using Reduck versus manual browsing
 
-See [eve's deployment guide](https://eve.dev/docs/guides/deployment) to host it yourself.
+## Contribute
+
+- A store is missing? [Open an issue](https://github.com/reduck-ai/shopduck/issues), and we add its script to Reduck's official library, where the agent can use it.
+- A new feature? Open an issue or a pull request on [GitHub](https://github.com/reduck-ai/shopduck).
