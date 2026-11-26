@@ -9,9 +9,9 @@
 
 Finding the best products at the best price means exploring many stores, but current agents like Muse are blocked on major ones.
 
-ShopDuck solves this with [Reduck](https://reduck.ai/), which provides a [library of scripts](https://docs.reduck.ai/core-concepts/#official-scripts) specific to each store that run on stealthy cloud browsers for fast and accurate results.
+ShopDuck solves this with [Reduck](https://reduck.ai/), which runs browser automation on stealthy cloud browsers. Reduck also maintains an [official library of scripts](https://docs.reduck.ai/core-concepts/#official-scripts) per site for fast and accurate results.
 
-ShopDuck works on stores where agents like Muse are blocked, starting with Amazon:
+**See** ShopDuck in action to find deals other agents miss because of anti-bot restrictions:
 
 <p align="center">
   <img src="docs/shopduck-vs-muse.png" alt="ShopDuck finds 6 YETI deals on Amazon in 38 s; Muse finds none in 307 s">
@@ -25,13 +25,13 @@ ShopDuck works on stores where agents like Muse are blocked, starting with Amazo
 
 ShopDuck was designed with two goals in mind:
 
-- For end users: build the best agent for shopping.
-    - **Highest store coverage**: Amazon, Walmart, Best Buy, Etsy and more, including stores that block other agents.
-    - **No hallucinated data**: data like prices are extracted programmatically with scripts versus other agents reading manually.
-    - **6x faster than Muse**: ShopDuck runs scripts instead of an agent loop that acts, then reads screenshots.
-- For builders: show with an open-source project how Reduck can be combined with frameworks like Vercel [eve](https://eve.dev) to create harnesses connected to any site.
-    - **3x cheaper with Reduck scripts vs manual browsing**: sites are mapped ahead of time into Reduck scripts, so the agent reads no screenshots and generates no browser actions, which takes far fewer tokens.
-    - **Customizable**: the code is open source. Inspect it, fork it, add features or other scripts.
+- For end users: build the best agent for shopping
+    - 100+ stores covered including: Amazon, Walmart, Best Buy, Etsy and more, including stores that block other agents.
+    - **No hallucination**: data like prices are extracted programmatically with scripts versus other agents reading manually
+    - **6x faster than Muse**: ShopDuck executes scripts instead of an agent loop that acts then reads screenshots. Benchmark coming soon, see Roadmap.
+- For builders: highlight with an open-source project how Reduck can be combined with frameworks like Vercel [eve](https://eve.dev) to create amazing harnesses connected to any site.
+    - 3x cheaper with Reduck scripts vs manual browsing: By mapping sites ahead of time and using Reduck scripts, commerce agents are much more token efficient as we do not need to do expensive input tokens ingestions of screenshots and output tokens generation of browser actions. See [Reduck Voyager Benchmark](https://blog.reduck.ai/browser-action-memory-layer-for-faster-agents/).
+    - **Customizable**: Code is open source, can be inspected and forked to add custom features or add other scripts.
 
 ## Run it locally
 
