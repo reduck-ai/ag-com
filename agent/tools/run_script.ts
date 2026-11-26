@@ -5,15 +5,14 @@ import { catalogueOnly, opts, outcome, reduck, runIds } from "../lib/reduck";
 // Never a paired device: its browser is signed in as this API key's owner, not as the caller.
 export default defineTool({
 	description:
-		"Run a Reduck script on a cloud browser, with args that fit its input_schema. A run still going after wait_seconds returns its run_id, to read again with read_run_results.",
+		"Run a Reduck script on a cloud browser, with args that fit its input_schema. A run still going after 55 seconds returns its run_id, to read again with read_run_results.",
 	inputSchema: z.object({
 		handle: z.string(),
 		host: z.string(),
 		slug: z.string(),
 		args: z.record(z.string(), z.unknown()).optional(),
 		region: z.enum(["eu-central-1", "us-east-1", "us-west-2", "ap-southeast-1"]).optional(),
-		country: z.string().optional().describe("ISO country code, to browse from that country."),
-		wait_seconds: z.number().max(55).default(55)
+		country: z.string().optional().describe("ISO country code, to browse from that country.")
 	}),
 	async execute({ handle, host, slug, ...body }) {
 		// Anyone may chat, and may name any script: the prompt and list_scripts are no boundary.
@@ -36,7 +35,7 @@ export default defineTool({
 		const { data: run } = await reduck.runScript({
 			...opts(),
 			path: { handle, host, slug },
-			body: { ...body, browser: "managed" }
+			body: { ...body, browser: "managed", wait_seconds: 55 }
 		});
 		runIds.update((ids) => [...ids, run.id]);
 		return outcome(run);
