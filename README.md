@@ -6,9 +6,11 @@ ShopDuck solves this with [Reduck](https://reduck.ai/), which provides a [librar
 
 ShopDuck works on stores where agents like Muse are blocked, starting with Amazon:
 
-![ShopDuck finds 6 YETI deals on Amazon in 24 s; Muse finds none in 15 min](docs/shopduck-vs-muse.png)
-
-ShopDuck runs scripts like [Amazon search](https://reduck.ai/explore/scripts/reduck/amazon.com/search-products) on a stealthy browser, which return full data, deals included. Muse is blocked on Amazon.
+<p align="center">
+  <img src="docs/shopduck-vs-muse.png" alt="ShopDuck finds 6 YETI deals on Amazon in 24 s; Muse finds none in 15 min">
+  <br>
+  <sub>ShopDuck runs scripts like <a href="https://reduck.ai/explore/scripts/reduck/amazon.com/search-products">Amazon search</a> on a stealthy browser, which return full data, deals included. Muse is blocked on Amazon.</sub>
+</p>
 
 ## Try it on [shopduck.ai](https://shopduck.ai/)
 
