@@ -14,10 +14,10 @@ export default defineTool({
 		region: z.enum(["eu-central-1", "us-east-1", "us-west-2", "ap-southeast-1"]).optional(),
 		country: z.string().optional().describe("ISO country code, to browse from that country.")
 	}),
-	// "search-products" on amazon.com: "Search products on amazon.com".
+	// "search-products" or "search_products" on amazon.com: "Search products on amazon.com".
 	label: {
 		start: ({ host, slug }) =>
-			`${slug[0]?.toUpperCase()}${slug.slice(1).replaceAll("-", " ")} on ${host}`
+			`${slug[0]?.toUpperCase()}${slug.slice(1).replace(/[-_]/g, " ")} on ${host}`
 	},
 	async execute({ handle, host, slug, ...body }) {
 		// Anyone may chat, and may name any script: the prompt and list_scripts are no boundary.
