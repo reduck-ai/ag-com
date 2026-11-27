@@ -1,0 +1,9 @@
+# What ShopDuck does for a shopper, as stories: given the shopper's country, when they ask, then
+# what the chat shows. Test a change to the agent against them in the browser chat.
+stories:
+  - given: { country: US }
+    when: Find me a tall sweater under $60
+    then: Every card shows the sizes its store offers, the tall ones among them. The reply names one pick and why.
+  - given: { country: US }
+    when: A light laptop for my son, for essays and Zoom, around $500
+    then: Every card shows the weight and the camera. The reply names one pick, why it fits light and Zoom, and its drawback.
