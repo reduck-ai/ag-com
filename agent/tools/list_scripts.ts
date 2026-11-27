@@ -14,6 +14,7 @@ export default defineTool({
 			),
 		host: z.string().optional().describe("The website, such as luma.com.")
 	}),
+	label: { start: ({ host }) => (host ? `Looking at ${host}` : "Looking for stores") },
 	async execute({ q, host }) {
 		const { data } = await reduck.listAllScripts({
 			...opts(),

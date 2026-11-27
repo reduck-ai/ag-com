@@ -110,11 +110,7 @@ export const ToolOutput = ({ className, output, errorText, ...props }: ToolOutpu
 
   return (
     <div
-      className={cn(
-        "overflow-x-auto rounded-md text-xs [&_table]:w-full",
-        errorText ? "bg-danger text-destructive" : "border text-foreground",
-        className,
-      )}
+      className={cn("overflow-x-auto rounded-md border text-foreground text-xs [&_table]:w-full", className)}
       {...props}
     >
       <span className="block px-3 pt-3 font-sans text-caption text-muted-foreground uppercase tracking-wide">

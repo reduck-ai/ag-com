@@ -12,7 +12,6 @@ import {
   faArrowUp,
   faArrowUpRightFromSquare,
   faBars,
-  faBrain,
   faCheck,
   faChevronDown,
   faChevronLeft,
@@ -22,11 +21,7 @@ import {
   faDownload,
   faKey,
   faPlus,
-  faRobot,
-  faStop,
   faTag,
-  faTerminal,
-  faWrench,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -43,8 +38,6 @@ function icon(definition: IconDefinition) {
 export const AlertCircleIcon = icon(faCircleExclamation);
 export const ArrowDownIcon = icon(faArrowDown);
 export const ArrowUpIcon = icon(faArrowUp);
-export const BotIcon = icon(faRobot);
-export const BrainIcon = icon(faBrain);
 export const CheckCircleIcon = icon(faCircleCheck);
 export const CheckIcon = icon(faCheck);
 export const ChevronDownIcon = icon(faChevronDown);
@@ -61,9 +54,6 @@ export const GitHubIcon = icon(faGithub);
 export const KeyRoundIcon = icon(faKey);
 export const MenuIcon = icon(faBars);
 export const PlusIcon = icon(faPlus);
-export const SquareIcon = icon(faStop);
 export const TagIcon = icon(faTag);
-export const TerminalIcon = icon(faTerminal);
-export const WrenchIcon = icon(faWrench);
 export const XCircleIcon = icon(faCircleXmark);
 export const XIcon = icon(faXmark);

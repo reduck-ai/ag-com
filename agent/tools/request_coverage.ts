@@ -6,6 +6,7 @@ import { z } from "zod";
 export default defineTool({
 	description: "Ask for a website to be covered, when no script does what the user wants on it.",
 	inputSchema: z.object({ host: z.string().describe("The website, such as luma.com.") }),
+	label: { start: ({ host }) => `Ask to cover ${host}` },
 	async execute({ host }) {
 		const url = process.env.REQUEST_COVERAGE_URL;
 		if (!url) return "This deployment takes no requests.";

@@ -8,6 +8,8 @@ type Step = { name: string; args: unknown[]; error?: string; t0: number; t1: num
 
 export default defineTool({
 	description: "Read the steps a run took on the website, to find where a failed run stopped.",
+	// Reading a contract or a run is how the agent works, not what a shopper sees it do.
+	label: false,
 	inputSchema: z.object({ run_id: z.string() }),
 	async execute({ run_id }) {
 		const { data, response } = await reduck.getRunTrace({

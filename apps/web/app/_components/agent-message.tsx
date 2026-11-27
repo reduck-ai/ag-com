@@ -1,7 +1,7 @@
 "use client";
 
 import type { CallState, SessionView } from "eve/events";
-import { callState, call, part } from "eve/events";
+import { callState, call, part, showsActivity } from "eve/events";
 import type {
   Interaction,
   EveInteractionPart,
@@ -13,16 +13,12 @@ import { signInEnding } from "eve/events";
 import type { Spec } from "@json-render/core";
 import { Fragment, useState, type FormEvent, type ReactNode } from "react";
 import {
-  BotIcon,
-  BrainIcon,
   CheckCircleIcon,
   CheckIcon,
   CopyIcon,
   ExternalLinkIcon,
   FileIcon,
   KeyRoundIcon,
-  TerminalIcon,
-  WrenchIcon,
   XCircleIcon,
 } from "@/components/icons";
 import {
@@ -52,7 +48,6 @@ import {
   TraceCollapsibleContent,
   TraceCollapsibleTrigger,
   TraceDescription,
-  TraceIcon,
   TraceLine,
   TraceTitle,
 } from "@/components/ui/trace";
@@ -78,12 +73,15 @@ type Step = Extract<EveMessagePart, { type: "reasoning" | "tool" }>;
 
 export function AgentMessage({
   last,
+  live,
   message,
   view,
   ...asks
 }: Asks & {
   // The finished last message keeps its actions in view; the others show them on hover.
   readonly last: boolean;
+  /** The agent still works on this message. */
+  readonly live: boolean;
   readonly message: EveMessage;
   readonly view: SessionView;
 }) {
@@ -103,7 +101,14 @@ export function AgentMessage({
         <MessageContent>
           {blocks.map((block, index) =>
             Array.isArray(block) ? (
-              <Steps asks={asks} key={partKey(block[0]!, index)} steps={block} view={view} />
+              <Steps
+                asks={asks}
+                key={partKey(block[0]!, index)}
+                // Between two calls no step runs, but the agent still works on this list.
+                live={live && index === blocks.length - 1}
+                steps={block}
+                view={view}
+              />
             ) : (
               <AgentMessagePart asks={asks} key={partKey(block, index)} part={block} />
             ),
@@ -147,13 +152,13 @@ function CopyAction({ text }: { readonly text: string }) {
 
 /**
  * A message's parts, with each run of steps (reasoning and calls) gathered into one list. A call
- * that asks a question shows as that question instead, and the model waiting on or cancelling
- * its own tasks isn't activity to show.
+ * that asks a question shows as that question instead, and a call eve hides (`label: false`, or
+ * the model waiting on its own tasks) isn't activity to show.
  */
 function blocksOf(parts: readonly EveMessagePart[], asks: Asks): (EveMessagePart | Step[])[] {
   const blocks: (EveMessagePart | Step[])[] = [];
   for (const part of parts) {
-    if (part.type === "tool" && part.kind === "control") continue;
+    if (part.type === "tool" && !showsActivity(part)) continue;
     const isStep =
       part.type === "reasoning" ||
       (part.type === "tool" && part.name !== "show" && asks.questionsFor(part.callId).length === 0);
@@ -207,23 +212,25 @@ function AgentMessagePart({ asks, part }: { readonly asks: Asks; readonly part: 
 }
 
 /**
- * A run of steps. Several fold into one line that opens while they work; an approval waits
- * below them, so it stays in view when the list is closed.
+ * A run of steps. Several fold into one line that names the running step while they work, and
+ * opens only to wait for the user; an approval waits below them, so it stays in view.
  */
 function Steps({
   asks,
+  live,
   steps,
   view,
 }: {
   readonly asks: Asks;
+  readonly live: boolean;
   readonly steps: readonly Step[];
   readonly view: SessionView;
 }) {
   const [open, setOpen] = useState<boolean>();
   const states = steps.map((step) => stepState(step, view));
-  const working = states.some((state) => state === "working");
+  const running = steps.findLast((_, index) => states[index] === "working");
+  const working = live || running !== undefined;
   const waiting = states.some((state) => state === "waiting");
-  const failed = states.filter((state) => state === "failed").length;
   const toolLines = (call: EveToolPart): ReactNode => {
     const nested = steps.filter(
       (step): step is EveToolPart => step.type === "tool" && parentCallIdOf(step) === call.callId,
@@ -263,19 +270,19 @@ function Steps({
       {steps.length === 1 ? (
         lines
       ) : (
-        <TraceCollapsible onOpenChange={setOpen} open={open ?? (working || waiting)}>
+        <TraceCollapsible onOpenChange={setOpen} open={open ?? waiting}>
           <TraceCollapsibleTrigger>
-            <TraceLine status={working ? "running" : failed > 0 ? "error" : undefined}>
+            <TraceLine status={working ? "running" : undefined}>
               <TraceTitle>
                 {working
-                  ? "Working"
+                  ? running?.type === "tool"
+                    ? running.label
+                    : "Thinking"
                   : waiting
                     ? "Waiting for you"
                     : `Worked${duration(steps, view) ?? ""}`}
               </TraceTitle>
-              <TraceDescription>
-                {failed > 0 ? `${failed} of ${steps.length} failed` : `${steps.length} steps`}
-              </TraceDescription>
+              {working ? null : <TraceDescription>{`${steps.length} steps`}</TraceDescription>}
             </TraceLine>
           </TraceCollapsibleTrigger>
           <TraceCollapsibleContent>{lines}</TraceCollapsibleContent>
@@ -309,12 +316,12 @@ function parentCallIdOf(part: EveToolPart): string | undefined {
   return typeof parent === "string" ? parent : undefined;
 }
 
-function stepState(step: Step, view: SessionView): "working" | "waiting" | "failed" | "done" {
+function stepState(step: Step, view: SessionView): "working" | "waiting" | "done" {
   if (step.type === "reasoning") return step.state === "streaming" ? "working" : "done";
   const state = callState(view, step.callId);
   if (state === "approval" || state === "blocked") return "waiting";
   const status = state === undefined ? "running" : CALL_LINES[state].status;
-  return status === "error" ? "failed" : status === undefined ? "done" : "working";
+  return status === undefined ? "done" : "working";
 }
 
 /** " for 12s": from the first step's start to the last one's end, when facts report times. */
@@ -330,16 +337,19 @@ function duration(steps: readonly Step[], view: SessionView): string | undefined
   return seconds < 60 ? ` for ${seconds}s` : ` for ${Math.floor(seconds / 60)}m ${seconds % 60}s`;
 }
 
-/** How a call's line reads in each state: its status, and a word on why. */
+/**
+ * How a call's line reads in each state: its status, and a word on why. A failed call is the
+ * agent's to retry, so it reads as a word, not as an alarm.
+ */
 const CALL_LINES: Record<
   CallState,
-  { readonly status?: "running" | "error" | "pending"; readonly note?: string }
+  { readonly status?: "running" | "pending"; readonly note?: string }
 > = {
   approval: { note: "Needs approval", status: "pending" },
   blocked: { note: "Waiting for you", status: "running" },
   cancelled: { note: "Stopped" },
   completed: {},
-  failed: { note: "Failed", status: "error" },
+  failed: { note: "Failed" },
   rejected: { note: "Denied" },
   requested: { status: "pending" },
   running: { status: "running" },
@@ -359,12 +369,8 @@ function ToolLine({
     state === "approval" && part.interaction?.answer !== undefined
       ? "Response submitted"
       : undefined;
-  const Icon = part.name === "bash" ? TerminalIcon : part.kind === "agent" ? BotIcon : WrenchIcon;
   const line = (
     <TraceLine status={status}>
-      <TraceIcon>
-        <Icon />
-      </TraceIcon>
       <TraceTitle>{part.label}</TraceTitle>
       {(answered ?? note) ? <TraceDescription>{answered ?? note}</TraceDescription> : null}
     </TraceLine>
@@ -398,9 +404,6 @@ function ReasoningLine({ part }: { readonly part: Extract<Step, { type: "reasoni
   const running = part.state === "streaming";
   const line = (
     <TraceLine status={running ? "running" : undefined}>
-      <TraceIcon>
-        <BrainIcon />
-      </TraceIcon>
       <TraceTitle>{running ? "Thinking" : "Thought"}</TraceTitle>
     </TraceLine>
   );

@@ -13,12 +13,10 @@ import {
 import { useEveAgent } from "eve/react";
 import {
   AlertCircleIcon,
-  BrainIcon,
   DiscordIcon,
   GitHubIcon,
   MenuIcon,
   PlusIcon,
-  SquareIcon,
 } from "@/components/icons";
 import { Dialog } from "radix-ui";
 import Link from "next/link";
@@ -41,7 +39,7 @@ import {
   usePromptInputAttachments,
 } from "@/components/ai-elements/prompt-input";
 import { Button } from "@/components/ui/button";
-import { Trace, TraceIcon, TraceLine, TraceTitle } from "@/components/ui/trace";
+import { Trace, TraceLine, TraceTitle } from "@/components/ui/trace";
 import { cn } from "@/lib/utils";
 import { AgentMessage } from "./agent-message";
 import { captureMessageSent } from "./analytics";
@@ -243,6 +241,7 @@ export function AgentChat({
                   canRespond={canRespond}
                   key={message.id}
                   last={message === lastMessage && !isBusy}
+                  live={message === lastMessage && isBusy}
                   message={message}
                   questionsFor={questionsFor}
                   view={agent.view}
@@ -325,9 +324,9 @@ function ComposerAction({
       title="Stop (Esc)"
       className="absolute right-2 bottom-2"
       onClick={onCancel}
-      variant="outline"
+      variant="ghost"
     >
-      <SquareIcon className="size-3 fill-current" />
+      <span className="size-3.5 rounded-[3px] bg-foreground" />
     </PromptInputButton>
   );
 }
@@ -539,9 +538,6 @@ function PendingActivity({ activity }: { readonly activity: Activity }) {
       <MessageContent>
         <Trace>
           <TraceLine status="running">
-            <TraceIcon>
-              <BrainIcon />
-            </TraceIcon>
             <TraceTitle>{activityLabel(activity)}</TraceTitle>
           </TraceLine>
         </Trace>

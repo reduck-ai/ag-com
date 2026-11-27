@@ -5,6 +5,8 @@ import { opts, reduck } from "../lib/reduck";
 export default defineTool({
 	description:
 		"Read a script's contract: what it does, the args it takes (input_schema), and what it returns (output_schema).",
+	// Reading a contract or a run is how the agent works, not what a shopper sees it do.
+	label: false,
 	inputSchema: z.object({ handle: z.string(), host: z.string(), slug: z.string() }),
 	async execute(path) {
 		const { data: s } = await reduck.getScript({ ...opts(), path });
