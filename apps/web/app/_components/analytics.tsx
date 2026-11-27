@@ -7,8 +7,9 @@ const KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY;
 
 /**
  * PostHog, in Reduck's project, its events marked `app: shopduck`. shopduck.ai shares no cookie with
- * reduck.ai, so a visitor here and the same person there are two people to PostHog. Off when no
- * key is set, as in local dev.
+ * reduck.ai, so a visitor here and the same person there are two people to PostHog. Cookieless:
+ * `persistence: "memory"` writes no cookie and nothing to browser storage, so a reload is a new
+ * visitor and the privacy policy needs no cookie notice. Off when no key is set, as in local dev.
  */
 export function Analytics() {
   useEffect(() => {
@@ -17,7 +18,7 @@ export function Analytics() {
       api_host: "https://eu.i.posthog.com",
       person_profiles: "identified_only",
       defaults: "2026-01-30",
-      persistence: "localStorage+cookie",
+      persistence: "memory",
       disable_surveys: true,
       // The page shows what each visitor types to the agent and what the agent answers: no
       // recording of it, and clicks are captured without the text they hold.
