@@ -10,16 +10,14 @@ export default defineTool({
 		handle: z.string(),
 		host: z.string(),
 		slug: z.string(),
-		args: z.record(z.string(), z.unknown()).optional(),
-		region: z.enum(["eu-central-1", "us-east-1", "us-west-2", "ap-southeast-1"]).optional(),
-		country: z.string().optional().describe("ISO country code, to browse from that country.")
+		args: z.record(z.string(), z.unknown()).optional()
 	}),
 	// "search-products" or "search_products" on amazon.com: "Search products on amazon.com".
 	label: {
 		start: ({ host, slug }) =>
 			`${slug[0]?.toUpperCase()}${slug.slice(1).replace(/[-_]/g, " ")} on ${host}`
 	},
-	async execute({ handle, host, slug, ...body }) {
+	async execute({ handle, host, slug, args }) {
 		// Anyone may chat, and may name any script: the prompt and list_scripts are no boundary.
 		// A script that needs a sign-in would act as the API key's owner, and one that writes
 		// would act on a website for an anonymous visitor.
@@ -37,10 +35,12 @@ export default defineTool({
 		if (v.side_effects !== "none")
 			throw new Error(`${handle}/${host}/${slug} changes things on the website: this agent cannot run it.`);
 
+		// No region and no country: Reduck runs each script where its website works best, and keeps
+		// a residential proxy for the websites that need one.
 		const { data: run } = await reduck.runScript({
 			...opts(),
 			path: { handle, host, slug },
-			body: { ...body, browser: "managed", wait_seconds: 55 }
+			body: { args, browser: "managed", wait_seconds: 55 }
 		});
 		runIds.update((ids) => [...ids, run.id]);
 		return outcome(run);
