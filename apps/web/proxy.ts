@@ -10,5 +10,14 @@ export function proxy(request: NextRequest) {
     target.host = routerHost;
     return NextResponse.redirect(target);
   }
-  return NextResponse.next();
+  const response = NextResponse.next();
+  // The browser's id, which names the visitor of its chats (agent/channels/eve.ts).
+  if (!request.cookies.has("shopduck_vid"))
+    response.cookies.set("shopduck_vid", crypto.randomUUID(), {
+      httpOnly: true,
+      maxAge: 60 * 60 * 24 * 395,
+      sameSite: "lax",
+      secure: true,
+    });
+  return response;
 }

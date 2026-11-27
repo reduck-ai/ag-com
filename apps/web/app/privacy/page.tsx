@@ -41,7 +41,7 @@ export default function Page() {
             called, what they returned, errors, and what our browsers displayed.
           </li>
           <li>
-            <strong>Usage analytics:</strong> page views and clicks, collected with a cookie and browser storage. They do not include the text you type. A click on a link in an answer may record the address of the page it opens.
+            <strong>Usage analytics:</strong> page views and clicks, collected with a cookie and browser storage. They do not include the text you type. A click on a link in an answer may record the address of the page it opens. A random id in a cookie tells us which chats come from the same browser.
           </li>
         </ul>
         <p>
