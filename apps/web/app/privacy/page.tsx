@@ -3,7 +3,7 @@ import { BetaNotice, CompanyAddress, LEGAL_VERSION, LegalPage, LegalSection } fr
 
 export const metadata: Metadata = {
   title: "Privacy policy · ShopDuck",
-  description: "How the ShopDuck demo, a product of Reduck, handles your information.",
+  description: "How the ShopDuck beta, a product of Reduck, handles your information.",
 };
 
 export default function Page() {
@@ -11,8 +11,10 @@ export default function Page() {
     <LegalPage title="ShopDuck Privacy Policy" version={LEGAL_VERSION}>
       <BetaNotice>
         <p>
-          <strong>ShopDuck is a demo, in beta.</strong> Please do not put card numbers, passwords or personal details in
-          it. What you type is logged and our team can read it.
+          <strong>ShopDuck is a beta: no account, no name, no email, you just ask.</strong> We log what you ask and what
+          comes back to make it work and make it better, and our team can read it, so please keep card numbers,
+          passwords and personal details out of your questions. We do not sell your information, and the code is open
+          on <a href="https://github.com/reduck-ai/shopduck">GitHub</a>.
         </p>
       </BetaNotice>
 
@@ -43,8 +45,8 @@ export default function Page() {
           </li>
         </ul>
         <p>
-          ShopDuck does not ask for your name, email or payment details and does not need them. If you type them
-          anyway, they may be recorded like anything else you type. Please don&apos;t.
+          ShopDuck does not need your name, email or payment details and does not ask for them. If you type them
+          anyway, they may be recorded like anything else you type, so it is best to leave them out.
         </p>
         <p>ShopDuck does not log in to websites with your accounts.</p>
         <p>
@@ -64,7 +66,7 @@ export default function Page() {
       <LegalSection title="Who can see it">
         <ul>
           <li>
-            <strong>Our team.</strong> ShopDuck is in beta, and we may read questions, results and run records to debug
+            <strong>Our team.</strong> During the beta, we may read questions, results and run records to debug
             and improve it.
           </li>
           <li>
@@ -100,15 +102,15 @@ export default function Page() {
         <p>
           Depending on where you live, you may have the right to access, correct, delete, restrict or port your
           information, to object to some uses, and to complain to a data protection authority. Write to us at the
-          address below. ShopDuck has no accounts, so we may ask you for details, such as the approximate time you used
+          address below. ShopDuck has no accounts, so we may need a few details from you, such as the approximate time you used
           it, to find your records.
         </p>
       </LegalSection>
 
       <LegalSection title="Security">
         <p>
-          We use reasonable technical and organizational measures. No system is fully secure, and ShopDuck is a beta
-          demo, so we cannot guarantee the security of what you send.
+          We protect what we hold with reasonable technical and organizational measures. No system is perfectly
+          secure, and ShopDuck is a beta, which is one more reason to keep sensitive details out of your questions.
         </p>
       </LegalSection>
 
