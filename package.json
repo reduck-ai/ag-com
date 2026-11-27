@@ -2,7 +2,7 @@
 	"name": "shopduck",
 	"private": true,
 	"type": "module",
-	"description": "An eve agent that acts on websites with no API, with @reduck-ai/sdk.",
+	"description": "The agent that shops anywhere to get you the best deals. Powered by Reduck.",
 	"license": "MIT",
 	"packageManager": "pnpm@11.28.8",
 	"engines": {

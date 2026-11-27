@@ -19,7 +19,7 @@ const sans = Inter({
 
 export const metadata: Metadata = {
   title: "ShopDuck",
-  description: "The agent that shops for you, on any website. Powered by Reduck.",
+  description: "The agent that shops anywhere to get you the best deals. Powered by Reduck.",
 };
 
 export default function RootLayout({ children }: { readonly children: ReactNode }) {
