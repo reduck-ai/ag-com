@@ -6,7 +6,6 @@ import {
   faCircleXmark,
   faCopy,
   faFile,
-  faImage,
 } from "@fortawesome/free-regular-svg-icons";
 import {
   faArrowDown,
@@ -28,6 +27,7 @@ import {
   faTag,
   faTerminal,
   faWrench,
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { cn } from "@/lib/utils";
@@ -58,7 +58,6 @@ export const DownloadIcon = icon(faDownload);
 export const ExternalLinkIcon = icon(faArrowUpRightFromSquare);
 export const FileIcon = icon(faFile);
 export const GitHubIcon = icon(faGithub);
-export const ImageIcon = icon(faImage);
 export const KeyRoundIcon = icon(faKey);
 export const MenuIcon = icon(faBars);
 export const PlusIcon = icon(faPlus);
@@ -67,3 +66,4 @@ export const TagIcon = icon(faTag);
 export const TerminalIcon = icon(faTerminal);
 export const WrenchIcon = icon(faWrench);
 export const XCircleIcon = icon(faCircleXmark);
+export const XIcon = icon(faXmark);

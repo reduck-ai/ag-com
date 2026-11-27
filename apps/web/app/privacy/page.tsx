@@ -53,7 +53,7 @@ export default function Page() {
         </p>
         <p>ShopDuck does not log in to websites with your accounts.</p>
         <p>
-          The list of your past chats is kept in your browser only. Each chat has its own link, and anyone who has that link can read and continue the chat, so do not share it.
+          The list of your past chats is kept in your browser only. Each chat has its own link, and anyone who has that link can read and continue the chat, so do not share it. Each image you add also gets a link of its own, and anyone who has that link can see the image.
         </p>
       </LegalSection>
 

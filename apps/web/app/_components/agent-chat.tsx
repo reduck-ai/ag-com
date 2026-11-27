@@ -32,6 +32,8 @@ import {
 import { Message, MessageContent } from "@/components/ai-elements/message";
 import {
   PromptInput,
+  PromptInputAddAttachments,
+  PromptInputAttachments,
   PromptInputButton,
   type PromptInputMessage,
   PromptInputSubmit,
@@ -162,7 +164,7 @@ export function AgentChat({
     }
     for (const file of message.files) {
       parts.push({
-        data: file.url,
+        data: (await hosted(file.url)) ?? file.url,
         filename: file.filename,
         mediaType: file.mediaType,
         type: "file",
@@ -182,13 +184,25 @@ export function AgentChat({
   };
 
   const composer = (
-    <PromptInput onSubmit={handleSubmit}>
+    <PromptInput
+      // The images whose bytes eve gives the model: of another type or larger, it gets their name only.
+      accept="image/png,image/jpeg,image/gif,image/webp"
+      maxFileSize={3 * 1024 * 1024}
+      multiple
+      onError={(error) => setCancellationError(error.message)}
+      onSubmit={handleSubmit}
+    >
+      <PromptInputAttachments />
       <PromptInputTextarea
-        className={showConversationLayout ? "md:text-base" : "min-h-24 px-3.5 py-3.5 md:text-lg"}
+        className={cn(
+          showConversationLayout ? "md:text-base" : "min-h-24 px-3.5 py-3.5 md:text-lg",
+          "pb-12",
+        )}
         disabled={isResuming}
         onChange={(event) => setHasInputText(event.currentTarget.value.trim().length > 0)}
         placeholder={isEmpty ? "What are you looking for?" : "Send a message…"}
       />
+      <PromptInputAddAttachments />
       <ComposerAction
         hasInputText={hasInputText}
         canCancel={turnOpen}
@@ -228,6 +242,7 @@ export function AgentChat({
                 <AgentMessage
                   canRespond={canRespond}
                   key={message.id}
+                  last={message === lastMessage && !isBusy}
                   message={message}
                   questionsFor={questionsFor}
                   view={agent.view}
@@ -573,6 +588,20 @@ const COUNTRIES = [
   "AE", "SA", "EG", "IN", "JP", "SG", "AU",
 ];
 const REGIONS = new Intl.DisplayNames(["en"], { type: "region" });
+
+// An image's URL of its own (app/images/route.ts). Without one, as when no Blob store is set up, eve
+// takes the image inline: the model still sees it, and the chat shows its name only.
+async function hosted(dataUrl: string): Promise<string | undefined> {
+  try {
+    const response = await fetch("/images", {
+      body: await (await fetch(dataUrl)).blob(),
+      method: "POST",
+    });
+    return response.ok ? (await response.json()).url : undefined;
+  } catch {
+    return undefined;
+  }
+}
 
 function toErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : "Unable to cancel the response.";

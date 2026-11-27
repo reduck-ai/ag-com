@@ -16,15 +16,22 @@ import {
   BotIcon,
   BrainIcon,
   CheckCircleIcon,
+  CheckIcon,
+  CopyIcon,
   ExternalLinkIcon,
   FileIcon,
-  ImageIcon,
   KeyRoundIcon,
   TerminalIcon,
   WrenchIcon,
   XCircleIcon,
 } from "@/components/icons";
-import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
+import {
+  Message,
+  MessageAction,
+  MessageActions,
+  MessageContent,
+  MessageResponse,
+} from "@/components/ai-elements/message";
 import { BashToolContent, ToolInput, ToolOutput } from "@/components/ai-elements/tool";
 import { Button } from "@/components/ui/button";
 import {
@@ -70,25 +77,71 @@ type EveFilePart = Extract<EveMessagePart, { type: "file" }>;
 type Step = Extract<EveMessagePart, { type: "reasoning" | "tool" }>;
 
 export function AgentMessage({
+  last,
   message,
   view,
   ...asks
-}: Asks & { readonly message: EveMessage; readonly view: SessionView }) {
+}: Asks & {
+  // The finished last message keeps its actions in view; the others show them on hover.
+  readonly last: boolean;
+  readonly message: EveMessage;
+  readonly view: SessionView;
+}) {
+  const text = message.parts.flatMap((p) => (p.type === "text" ? [p.text] : [])).join("\n\n");
+  // An image with a URL shows above the bubble, as itself; the bubble holds the rest.
+  const isImage = (p: EveMessagePart) => p.type === "file" && p.url !== undefined;
+  const blocks = blocksOf(message.parts.filter((p) => !isImage(p)), asks);
   return (
     <Message
       data-optimistic={message.metadata?.optimistic ? "true" : undefined}
       from={message.role}
     >
-      <MessageContent>
-        {blocksOf(message.parts, asks).map((block, index) =>
-          Array.isArray(block) ? (
-            <Steps asks={asks} key={partKey(block[0]!, index)} steps={block} view={view} />
-          ) : (
-            <AgentMessagePart asks={asks} key={partKey(block, index)} part={block} />
-          ),
-        )}
-      </MessageContent>
+      {message.parts.filter(isImage).map((image, index) => (
+        <ImagePart image={image as EveFilePart} key={`image:${index}`} />
+      ))}
+      {blocks.length > 0 ? (
+        <MessageContent>
+          {blocks.map((block, index) =>
+            Array.isArray(block) ? (
+              <Steps asks={asks} key={partKey(block[0]!, index)} steps={block} view={view} />
+            ) : (
+              <AgentMessagePart asks={asks} key={partKey(block, index)} part={block} />
+            ),
+          )}
+        </MessageContent>
+      ) : null}
+      {text ? (
+        <MessageActions
+          className={cn(
+            "-ml-1.5 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100 group-[.is-user]:-mr-1.5 group-[.is-user]:self-end pointer-coarse:opacity-100",
+            last && "opacity-100",
+          )}
+        >
+          <CopyAction text={text} />
+        </MessageActions>
+      ) : null}
     </Message>
+  );
+}
+
+/** Copies a message's words, in markdown; the cards it shows stay out. */
+function CopyAction({ text }: { readonly text: string }) {
+  const [copied, setCopied] = useState(false);
+  const Icon = copied ? CheckIcon : CopyIcon;
+  return (
+    <MessageAction
+      className="rounded-md text-muted-foreground"
+      onClick={() =>
+        void navigator.clipboard.writeText(text).then(() => {
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        })
+      }
+      size="icon-xs"
+      tooltip="Copy"
+    >
+      <Icon className="size-3.5" />
+    </MessageAction>
   );
 }
 
@@ -442,34 +495,27 @@ function QuestionRequest({
   );
 }
 
+function ImagePart({ image }: { readonly image: EveFilePart }) {
+  return (
+    <a className="w-fit group-[.is-user]:self-end" href={image.url} rel="noreferrer" target="_blank">
+      <img alt={image.filename ?? ""} className="max-h-80 rounded-lg border" src={image.url} />
+    </a>
+  );
+}
+
+/** A file whose bytes eve keeps no URL for: its name. */
 function AttachmentPart({ part }: { readonly part: EveFilePart }) {
-  const label = part.filename ?? "Attachment";
   const detail = [part.mediaType, formatBytes(part.size)].filter(Boolean).join(" - ");
-  const isImage = part.mediaType.startsWith("image/") && part.url !== undefined;
-  const Icon = isImage ? ImageIcon : FileIcon;
-  const body = (
+  return (
     <span className="flex max-w-sm items-center gap-3 rounded-md border bg-background/60 p-2 text-sm">
-      {isImage ? (
-        <img alt={label} className="size-12 shrink-0 rounded-sm object-cover" src={part.url} />
-      ) : (
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-sm bg-muted text-muted-foreground">
-          <Icon className="size-4" />
-        </span>
-      )}
+      <span className="flex size-10 shrink-0 items-center justify-center rounded-sm bg-muted text-muted-foreground">
+        <FileIcon className="size-4" />
+      </span>
       <span className="min-w-0 flex-1">
-        <span className="block truncate font-medium">{label}</span>
+        <span className="block truncate font-medium">{part.filename ?? "Attachment"}</span>
         {detail ? <span className="block truncate text-muted-foreground">{detail}</span> : null}
       </span>
-      {part.url ? <ExternalLinkIcon className="size-4 shrink-0 text-muted-foreground" /> : null}
     </span>
-  );
-
-  return part.url ? (
-    <a href={part.url} rel="noreferrer" target="_blank">
-      {body}
-    </a>
-  ) : (
-    body
   );
 }
 

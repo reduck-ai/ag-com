@@ -1,9 +1,14 @@
 "use client";
 
-import { InputGroup, InputGroupButton, InputGroupTextarea } from "@/components/ui/input-group";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupTextarea,
+} from "@/components/ui/input-group";
 import { cn } from "@/lib/utils";
 import type { FileUIPart } from "ai";
-import { ArrowUpIcon } from "@/components/icons";
+import { ArrowUpIcon, PlusIcon, XIcon } from "@/components/icons";
 import { nanoid } from "nanoid";
 import type {
   ChangeEventHandler,
@@ -48,6 +53,7 @@ interface AttachmentsContext {
   add: (files: File[] | FileList) => void;
   remove: (id: string) => void;
   clear: () => void;
+  openFileDialog: () => void;
 }
 
 const LocalAttachmentsContext = createContext<AttachmentsContext | null>(null);
@@ -89,6 +95,7 @@ export const PromptInput = ({
   ...props
 }: PromptInputProps) => {
   const formRef = useRef<HTMLFormElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const [files, setFiles] = useState<(FileUIPart & { id: string })[]>([]);
   const filesRef = useRef(files);
 
@@ -203,7 +210,10 @@ export const PromptInput = ({
     [add],
   );
 
-  const attachments = useMemo(() => ({ add, clear, files, remove }), [add, clear, files, remove]);
+  const attachments = useMemo(
+    () => ({ add, clear, files, openFileDialog: () => inputRef.current?.click(), remove }),
+    [add, clear, files, remove],
+  );
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = useCallback(
     async (event) => {
@@ -239,6 +249,7 @@ export const PromptInput = ({
         className="hidden"
         multiple={multiple}
         onChange={handleChange}
+        ref={inputRef}
         title="Upload files"
         type="file"
       />
@@ -328,6 +339,47 @@ export const PromptInputTextarea = ({
       {...props}
       onChange={onChange}
     />
+  );
+};
+
+/** The images to send, above the text, each removed with its corner button. */
+export const PromptInputAttachments = () => {
+  const { files, remove } = usePromptInputAttachments();
+  if (files.length === 0) return null;
+  return (
+    <InputGroupAddon align="block-start" className="flex-wrap gap-3">
+      {files.map((file) => (
+        <div className="group/attachment relative" key={file.id}>
+          <img
+            alt={file.filename ?? ""}
+            className="size-30 rounded-lg border bg-muted object-contain"
+            src={file.url}
+          />
+          <button
+            aria-label={`Remove ${file.filename ?? "image"}`}
+            className="absolute -top-2 -right-2 flex size-5 items-center justify-center rounded-full border bg-background text-foreground opacity-0 transition-opacity group-hover/attachment:opacity-100 focus-visible:opacity-100 pointer-coarse:opacity-100"
+            onClick={() => remove(file.id)}
+            type="button"
+          >
+            <XIcon className="size-2.5" />
+          </button>
+        </div>
+      ))}
+    </InputGroupAddon>
+  );
+};
+
+/** Opens the file picker, from the composer's bottom left corner. */
+export const PromptInputAddAttachments = () => {
+  const { openFileDialog } = usePromptInputAttachments();
+  return (
+    <PromptInputButton
+      aria-label="Add images"
+      className="absolute bottom-2 left-2"
+      onClick={openFileDialog}
+    >
+      <PlusIcon className="size-4" />
+    </PromptInputButton>
   );
 };
 
