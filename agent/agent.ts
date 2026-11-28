@@ -5,5 +5,5 @@ export default defineAgent({
 	defaultTools: false,
 	// A model id string goes through the Vercel AI Gateway, whose budget caps what the demo spends.
 	model: "google/gemini-4-hydrogen",
-	reasoning: "low"
+	reasoning: "medium"
 });
