@@ -7,3 +7,9 @@ stories:
   - given: { country: US }
     when: A light laptop for my son, for essays and Zoom, around $500
     then: Every card shows the weight and the camera. The reply names one pick, why it fits light and Zoom, and its drawback.
+  - given: { country: US }
+    when: Laptop stand for my 14" MacBook Pro, aluminum and adjustable, well rated, under $60. I order everything on Amazon US.
+    then: Each item was read on its page before it was shown, and every card is a stand its page says is aluminum.
+  - given: { country: US }
+    when: Cordless drill for small jobs around the house, my Lowe's is in Austin, TX 78701.
+    then: The reply says whether pickup at the Austin store could be checked, and does not leave it out.
