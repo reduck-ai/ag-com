@@ -41,7 +41,7 @@ export default function Page() {
             called, what they returned, errors, and what our browsers displayed.
           </li>
           <li>
-            <strong>Usage analytics:</strong> page views and clicks, collected without cookies and without browser storage. They do not include the text you type. A click on a link in an answer may record the address of the page it opens.
+            <strong>Usage analytics:</strong> page views, clicks, and each message you send with the country ShopDuck shops in, collected without cookies and without browser storage. They do not include the text you type. A click on a link in an answer may record the address of the page it opens.
           </li>
           <li>
             <strong>One cookie, set by ShopDuck:</strong> a random id, kept for about 13 months, that tells us which chats come from the same browser. It holds nothing else.

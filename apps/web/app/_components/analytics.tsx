@@ -35,7 +35,15 @@ export function Analytics() {
   return null;
 }
 
-/** An event without the message itself: what a visitor types stays out of PostHog. */
-export function captureMessageSent(props: { readonly withFiles: boolean; readonly steer: boolean }) {
+/**
+ * An event without the message itself: what a visitor types stays out of PostHog. `delivery` names
+ * the message in its chat's stream, and reads nothing: the session id does.
+ */
+export function captureMessageSent(props: {
+  readonly withFiles: boolean;
+  readonly steer: boolean;
+  readonly country: string | null;
+  readonly delivery: string;
+}) {
   if (posthog.__loaded) posthog.capture("shopduck_message_sent", props);
 }

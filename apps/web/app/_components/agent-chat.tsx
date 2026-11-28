@@ -154,7 +154,6 @@ export function AgentChat({
       ...(turnOpen ? { turnPolicy: "steer" as const } : {}),
       ...(country ? { clientContext: { country } } : {}),
     };
-    captureMessageSent({ withFiles: message.files.length > 0, steer: turnOpen });
 
     const parts: MessagePart[] = [];
     if (text.length > 0) {
@@ -170,6 +169,12 @@ export function AgentChat({
     }
 
     const delivery = await agent.send(message.files.length === 0 ? text : parts, options);
+    captureMessageSent({
+      withFiles: message.files.length > 0,
+      steer: turnOpen,
+      country,
+      delivery: delivery.deliveryId,
+    });
     if (!isEmpty) return;
     saveChat({ sessionId: delivery.sessionId, title: text || "Files" });
     // Next.js patches `history`: its router would remount the page and cut off the reply.
