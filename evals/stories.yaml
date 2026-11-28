@@ -13,3 +13,12 @@ stories:
   - given: { country: US }
     when: Cordless drill for small jobs around the house, my Lowe's is in Austin, TX 78701.
     then: The reply says whether pickup at the Austin store could be checked, and does not leave it out.
+  - given: { country: US }
+    when: Where are AirPods Pro 3 cheapest in the US right now?
+    then: Every card is AirPods Pro 3, from more than one store, at the price its page shows. The cheapest comes first.
+  - given: { country: DE }
+    when: Ein leichter Laptop für meinen Sohn, für Hausarbeiten und Zoom, bis 700 €.
+    then: Every card is from a German store, in euros, and shows the weight and the camera. The reply is in German.
+  - given: { country: US }
+    when: A cordless leaf blower at Home Depot, I already have DeWalt 20V batteries.
+    then: When Home Depot cannot be read, the reply says so, and shows no other store's items as Home Depot's.
